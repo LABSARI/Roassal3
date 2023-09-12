@@ -283,6 +283,12 @@ RSCanvas >> defaultExtent [
 	^ 500@500
 ]
 
+{ #category : #'accessing - computed' }
+RSCanvas >> dirtyRectangle [
+
+	^ host dirtyRectangle 
+]
+
 { #category : #antialiasing }
 RSCanvas >> disableAntialiasing [
 	self hasAntialiasing: false
@@ -600,6 +606,12 @@ RSCanvas >> removeShape: shape [
 	shape announce: evt
 ]
 
+{ #category : #'dirty areas' }
+RSCanvas >> resetDirtyRectangle [
+
+	host dirtyRectangle: nil
+]
+
 { #category : #antialiasing }
 RSCanvas >> setAA: aNumber [
 	self propertyAt: #aa put: aNumber
@@ -676,6 +688,12 @@ RSCanvas >> shapesFromModels: objects [
 	^ self nodes shapesFromModels: objects
 ]
 
+{ #category : #rendering }
+RSCanvas >> shapesToRender [
+
+	^ shapes select: [ :s | s isDirty ]
+]
+
 { #category : #'event processing' }
 RSCanvas >> shapesWithActionForPosition: aPositionInSpace [
 	| result |
@@ -734,6 +752,12 @@ RSCanvas >> signalUpdate [
 { #category : #'accessing - computed' }
 RSCanvas >> transform: aPoint [
 	^ aPoint
+]
+
+{ #category : #'dirty areas' }
+RSCanvas >> updateDirtyRectangleWith: aRectangle [
+
+	host updateDirtyRectangleWith: aRectangle
 ]
 
 { #category : #accessing }

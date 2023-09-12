@@ -40,7 +40,8 @@ Class {
 		'isFixed',
 		'encompassingRectangle',
 		'model',
-		'shapeIndex'
+		'shapeIndex',
+		'isDirty'
 	],
 	#category : #'Roassal3-Core'
 }
@@ -424,7 +425,8 @@ RSShape >> indexesArrayIn: aCollection [
 RSShape >> initialize [
 	super initialize.
 	paint := self defaultColor.
-	isFixed := false
+	isFixed := false.
+	isDirty := true
 ]
 
 { #category : #testing }
@@ -438,6 +440,18 @@ RSShape >> intersects: aRectangle [
 { #category : #testing }
 RSShape >> isComposite [
 	^ false
+]
+
+{ #category : #testing }
+RSShape >> isDirty [
+	
+	^ isDirty
+]
+
+{ #category : #accessing }
+RSShape >> isDirty: anObject [
+
+	isDirty := anObject
 ]
 
 { #category : #testing }
@@ -592,10 +606,17 @@ RSShape >> renderOn: aCanvas [
 
 { #category : #initialization }
 RSShape >> resetBBox [
+
 	| shouldUpdate |
 	shouldUpdate := parent notNil and: [ self isFixed not ].
-	shouldUpdate 
-		ifTrue: [ parent updateInShapeCollection: self ]
+
+	shouldUpdate
+		ifTrue: [
+			"We have to update the dirty rectangle with the old position first."
+			self canvas updateDirtyRectangleWith: self encompassingRectangle.
+			parent updateInShapeCollection: self.
+			"We then have to update the dirty rectangle with the new position."
+			self canvas updateDirtyRectangleWith: self encompassingRectangle ]
 		ifFalse: [ encompassingRectangle := nil ]
 ]
 

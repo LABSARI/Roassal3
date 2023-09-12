@@ -43,7 +43,8 @@ RSTContainer >> addBasicShape: aShape [
 	listOfShapes := self privateShapes.
 	listOfShapes add: aShape.
 	aShape shapeIndex: listOfShapes size.
-	shapeCollection add: aShape
+	shapeCollection add: aShape.
+	self canvas updateDirtyRectangleWith: aShape encompassingRectangle
 ]
 
 { #category : #'adding nodes edges' }

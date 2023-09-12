@@ -99,7 +99,9 @@ RSAthensMorph >> drawShapes [
 			ifTrue: [ surface clear ].
 		"We display the elements that are subject to the camera"
 
-		renderer canvas: athensCanvas.
+		renderer 
+			surface: surface;
+			canvas: athensCanvas.
 		roassalCanvas accept: renderer.
 	]
 ]

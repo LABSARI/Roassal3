@@ -21,7 +21,8 @@ Class {
 		'matrix',
 		'canvasRect',
 		'showRectangles',
-		'originMatrix'
+		'originMatrix',
+		'surface'
 	],
 	#category : #'Roassal3-Rendering'
 }
@@ -439,6 +440,15 @@ RSAthensRenderer >> builder [
 	^ builder
 ]
 
+{ #category : #visiting }
+RSAthensRenderer >> clearRectangle: dirtyRectangle [
+	athensCanvas paintMode restoreAfter: [
+			athensCanvas paintMode source.
+			athensCanvas
+				setPaint: Color transparent;
+				drawShape: dirtyRectangle ]
+]
+
 { #category : #utilities }
 RSAthensRenderer >> createStrokePaintFor: border [
 	| stroke style |
@@ -563,6 +573,24 @@ RSAthensRenderer >> paintFor: shape form: form [
 			paint ]
 ]
 
+{ #category : #accessing }
+RSAthensRenderer >> surface [
+
+	^ surface
+]
+
+{ #category : #accessing }
+RSAthensRenderer >> surface: anObject [
+
+	surface := anObject
+]
+
+{ #category : #visiting }
+RSAthensRenderer >> transform: dirtyRectangle [
+	^ Rectangle encompassing: (dirtyRectangle corners 
+		collect: [:corner | matrix transform: corner]).
+]
+
 { #category : #visiting }
 RSAthensRenderer >> visitBorder: border [
 	| stroke |
@@ -593,6 +621,7 @@ RSAthensRenderer >> visitBoundingShape: shape [
 		self visitBorderIfNecessary: shape.
 		self visitShadowRectangleIfNecessary: shape.
 		self visitChildrenIfNecessary: shape.
+		shape isDirty: false
 	]
 ]
 
@@ -603,21 +632,31 @@ RSAthensRenderer >> visitCamera: camera [
 
 { #category : #visiting }
 RSAthensRenderer >> visitCanvas: aRSCanvas [
+
+	| dirtyRectangle |
+	dirtyRectangle := aRSCanvas dirtyRectangle.
+	dirtyRectangle ifNil: [ ^ self ].
+
 	matrix := AthensAffineTransform new.
 	originMatrix := matrix copy.
 	canvasRect := aRSCanvas visibleRectangle.
 	showRectangles := aRSCanvas shouldShowRectangles.
 	athensCanvas fillRuleEvenOdd.
-	athensCanvas setAA: aRSCanvas antialiasing.
+	athensCanvas setAA: aRSCanvas antialiasing. 
 
 	aRSCanvas camera accept: self.
-	(aRSCanvas shapeCollection shapesAtRectangle: canvasRect) accept: self.
+	dirtyRectangle := self transform: dirtyRectangle.
+	self clearRectangle: dirtyRectangle.
+	athensCanvas clipBy: dirtyRectangle during: [ 
+		(aRSCanvas shapeCollection shapesAtRectangle:
+		 aRSCanvas dirtyRectangle) accept: self ].
 
 	"We display the elements that are _NOT_ subject to the camera"
 	matrix loadIdentity.
 	originMatrix loadIdentity.
-	canvasRect := 0@0 extent: aRSCanvas extent.
-	aRSCanvas fixedShapes accept: self
+	canvasRect := 0 @ 0 extent: aRSCanvas extent.
+	aRSCanvas fixedShapes accept: self.
+	aRSCanvas resetDirtyRectangle
 ]
 
 { #category : #'visiting - helpers' }
