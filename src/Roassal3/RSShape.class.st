@@ -125,11 +125,11 @@ RSShape >> addShapesIn: aCollection position: position [
 RSShape >> addedIn: aCanvas [
 	"This is a private method"
 	| evt |
+	parent ifNotNil: [ self remove ].
+	parent := aCanvas.
 	self isFixed
 		ifTrue: [ aCanvas addFixedShape: self ]
 		ifFalse: [ aCanvas addBasicShape: self ].
-	parent ifNotNil: [ self remove ].
-	parent := aCanvas.
 	self addPendingAnimationsIn: parent.
 
 	evt := RSShapeAddedEvent new shape: self.
@@ -240,9 +240,9 @@ c add: (RSBox new size: 50; color: Color blue).
 c
 ```
 	"
-	paint := aColor.
+	self paint: aColor.
 	paint isColor ifTrue: [ ^ self ].
-	paint := Color colorFrom: aColor
+	paint := Color colorFrom: aColor.
 ]
 
 { #category : #'accessing - computed' }
@@ -437,6 +437,14 @@ RSShape >> intersects: aRectangle [
 	^ self subclassResponsibility
 ]
 
+{ #category : #'dirty areas' }
+RSShape >> invalidate [
+
+	parent ifNil: [ ^ self ].
+	self isDirty: true.
+	parent updateDirtyRectangleWith: self encompassingRectangle
+]
+
 { #category : #testing }
 RSShape >> isComposite [
 	^ false
@@ -525,7 +533,9 @@ RSShape >> paint [
 { #category : #accessing }
 RSShape >> paint: aPaint [
 	"Receive a Color or an Athens paint object"
-	paint := aPaint
+	paint := aPaint.
+	
+	self invalidate
 ]
 
 { #category : #accessing }
@@ -613,10 +623,10 @@ RSShape >> resetBBox [
 	shouldUpdate
 		ifTrue: [
 			"We have to update the dirty rectangle with the old position first."
-			self canvas updateDirtyRectangleWith: self encompassingRectangle.
+			self invalidate.
 			parent updateInShapeCollection: self.
 			"We then have to update the dirty rectangle with the new position."
-			self canvas updateDirtyRectangleWith: self encompassingRectangle ]
+			self invalidate. ]
 		ifFalse: [ encompassingRectangle := nil ]
 ]
 
@@ -681,6 +691,7 @@ RSShape >> shapeWithActionForPosition: position [
 RSShape >> signalUpdate [
 	"Refresh the canvas"
 	parent ifNil: [ ^ self ].
+	self invalidate.
 	parent signalUpdate
 ]
 

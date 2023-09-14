@@ -572,3 +572,11 @@ c @ RSCanvasController
 		child isNode
 			ifTrue: [ child updateConnectedLines ] ]
 ]
+
+{ #category : #'dirty areas' }
+RSComposite >> updateDirtyRectangleWith: aRectangle [
+	| newRectangle |
+	parent ifNil:[ ^ self ].
+	newRectangle := self computeEncompassingRectangleFor: aRectangle matrix: matrix.
+	parent updateDirtyRectangleWith: newRectangle.
+]

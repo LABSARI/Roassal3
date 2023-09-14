@@ -89,26 +89,22 @@ RSCanvasTest >> testBasicCoordinates [
 { #category : #'tests - dirty areas' }
 RSCanvasTest >> testCanvasClearBackgroundWhenShapePositionChange [
 
-	| box formCanvas morph |
+	| box form |
 	box := RSBox new
 		       color: Color black;
 		       extent: 10 asPoint;
 		       yourself.
 	canvas add: box.
-	morph := canvas createMorph.
-	canvas shouldClearBackground: false.
-	morph extent: 500 @ 500.
-	formCanvas := FormCanvas extent: canvas extent.
-	morph drawOn: formCanvas.
+	form := canvas asForm.
 	self
 		assert:
-		(formCanvas form colorAt: (canvas extent / 2) asIntegerPoint)
+		(form colorAt: (canvas extent / 2) asIntegerPoint)
 		equals: box color.
 	box position: 20 asPoint.
-	morph drawOn: formCanvas.
+	form := canvas asForm.
 	self
 		assert:
-		(formCanvas form colorAt: (canvas extent / 2) asIntegerPoint)
+		(form colorAt: (canvas extent / 2) asIntegerPoint)
 		equals: canvas color
 ]
 
@@ -132,6 +128,27 @@ RSCanvasTest >> testCanvasDirtyRectangleIsNotEmpty [
 	self
 		assert: canvas dirtyRectangle
 		equals: (-50 asPoint corner: 150 asPoint)
+]
+
+{ #category : #'tests - dirty areas' }
+RSCanvasTest >> testCanvasDirtyWhenShapeIsAddedInComposite [
+
+	| composite canvasForm box |
+	composite := RSComposite new
+		             extent: 100 asPoint;
+		             position: 50 asPoint;
+		             color: Color black;
+		             yourself.
+	box := RSBox new
+		       extent: 50 asPoint;
+		       color: Color red;
+		       yourself.
+	canvas add: composite.
+	canvasForm := canvas asForm.
+	composite add: box.
+	self
+		assert: canvas dirtyRectangle
+		equals: (25 asPoint corner: 75 asPoint)
 ]
 
 { #category : #'tests - dirty areas' }
@@ -574,6 +591,107 @@ RSCanvasTest >> testShapeIsDirtyAfterAddingInCanvas [
 	box := RSBox new extent: 50 asPoint.
 	canvas add: box.
 	self assert: canvas shapesToRender asArray equals: { box }
+]
+
+{ #category : #'tests - dirty areas' }
+RSCanvasTest >> testShapeIsDirtyAfterPushBack [
+
+	| box box1 form position |
+	box := RSBox new
+		       color: Color black;
+		       extent: 50 asPoint;
+		       yourself.
+	box1 := RSBox new
+		        extent: 50 asPoint;
+		        position: 25 asPoint;
+		        color: Color red;
+		        yourself.
+	canvas
+		add: box;
+		add: box1.
+	canvas shouldClearBackground: false.
+	form := canvas asForm.
+	position := canvas extent / 2 + 20 asPoint.
+	self assert: (form colorAt: position) equals: Color red.
+	box1 pushBack.
+	form := canvas asForm.
+	self assert: (form colorAt: position) equals: Color black
+]
+
+{ #category : #'tests - dirty areas' }
+RSCanvasTest >> testShapeIsDirtyAfterPushFront [
+
+	| box box1 form position |
+	box := RSBox new
+		       color: Color black;
+		       extent: 50 asPoint;
+		       yourself.
+	box1 := RSBox new
+		        extent: 50 asPoint;
+		        position: 25 asPoint;
+		        color: Color red;
+		        yourself.
+	canvas
+		add: box;
+		add: box1.
+	canvas shouldClearBackground: false.
+	form := canvas asForm.
+	position := canvas extent / 2 + 20 asPoint.
+	self assert: (form colorAt: position) equals: Color red .
+	box pushFront.
+	self assert: canvas dirtyRectangle equals: box encompassingRectangle.
+	form := canvas asForm.
+	self assert: (form colorAt: position) equals: Color black
+]
+
+{ #category : #'tests - dirty areas' }
+RSCanvasTest >> testShapeIsDirtyAfterUpdatingColor [
+
+	| box |
+	box := RSBox new
+		       extent: 50 asPoint;
+		       color: Color black;
+		       yourself.
+
+	canvas add: box.
+
+	canvas createMorph drawOnMockCanvas.
+	box color: Color red.
+	self assert: canvas dirtyRectangle equals: box encompassingRectangle
+]
+
+{ #category : #'tests - dirty areas' }
+RSCanvasTest >> testShapeIsDirtyAfterUpdatingExtent [
+
+	| box |
+	box := RSBox new
+		       extent: 50 asPoint;
+		       yourself.
+
+	canvas add: box.
+
+	canvas createMorph drawOnMockCanvas.
+	box extent: 10 asPoint.
+	self
+		assert: canvas dirtyRectangle
+		equals: (-25 asPoint corner: 25 asPoint)
+]
+
+{ #category : #'tests - dirty areas' }
+RSCanvasTest >> testShapeIsDirtyAfterUpdatingExtentToBiggerOne [
+
+	| box |
+	box := RSBox new
+		       extent: 50 asPoint;
+		       yourself.
+
+	canvas add: box.
+
+	canvas createMorph drawOnMockCanvas.
+	box extent: 100 asPoint.
+	self
+		assert: canvas dirtyRectangle
+		equals: (-50 asPoint corner: 50 asPoint)
 ]
 
 { #category : #'tests - dirty areas' }
