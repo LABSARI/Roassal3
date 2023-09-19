@@ -633,23 +633,24 @@ RSAthensRenderer >> visitCamera: camera [
 { #category : #visiting }
 RSAthensRenderer >> visitCanvas: aRSCanvas [
 
-	| dirtyRectangle |
+	| dirtyRectangle transformeDirtyRectangle |
 	dirtyRectangle := aRSCanvas dirtyRectangle.
 	dirtyRectangle ifNil: [ ^ self ].
 
 	matrix := AthensAffineTransform new.
 	originMatrix := matrix copy.
 	canvasRect := aRSCanvas visibleRectangle.
+	
+	
 	showRectangles := aRSCanvas shouldShowRectangles.
 	athensCanvas fillRuleEvenOdd.
 	athensCanvas setAA: aRSCanvas antialiasing. 
 
 	aRSCanvas camera accept: self.
-	dirtyRectangle := self transform: dirtyRectangle.
-	self clearRectangle: dirtyRectangle.
-	athensCanvas clipBy: dirtyRectangle during: [ 
-		(aRSCanvas shapeCollection shapesAtRectangle:
-		 aRSCanvas dirtyRectangle) accept: self ].
+	transformeDirtyRectangle := self transform: dirtyRectangle.
+	self clearRectangle: transformeDirtyRectangle.
+	athensCanvas clipBy: transformeDirtyRectangle during: [ 
+		(aRSCanvas shapeCollection shapesAtRectangle: dirtyRectangle) accept: self ].
 
 	"We display the elements that are _NOT_ subject to the camera"
 	matrix loadIdentity.

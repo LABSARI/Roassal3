@@ -204,7 +204,7 @@ RSShape >> borderWidth: aNumber [
 	self border width: aNumber
 ]
 
-{ #category : #'accessing - computed' }
+{ #category : #accessing }
 RSShape >> canvas [
 	"Return the canvas in which I belong to. Can return nil if the shape is not added to a canvas"
 	parent ifNil: [ ^ nil ].
@@ -364,6 +364,12 @@ RSShape >> hasBorder [
 
 { #category : #testing }
 RSShape >> hasChildren [
+	^ false
+]
+
+{ #category : #'accessing - computed' }
+RSShape >> hasChildrenAtRectangle: aRectangle [
+
 	^ false
 ]
 

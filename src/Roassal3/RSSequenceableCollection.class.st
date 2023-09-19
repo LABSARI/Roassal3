@@ -59,7 +59,10 @@ RSSequenceableCollection >> shapesAtPoint: position [
 
 { #category : #'finding/searching' }
 RSSequenceableCollection >> shapesAtRectangle: aRectangle [
-	^ group select: [ :each | each encompassingRectangle intersects: aRectangle ]
+
+	^ group select: [ :each |
+		  (each encompassingRectangle intersects: aRectangle) or: [
+			  each hasChildrenAtRectangle: aRectangle ] ]
 ]
 
 { #category : #'finding/searching' }

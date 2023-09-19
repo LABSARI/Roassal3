@@ -152,6 +152,32 @@ RSCanvasTest >> testCanvasDirtyWhenShapeIsAddedInComposite [
 ]
 
 { #category : #'tests - dirty areas' }
+RSCanvasTest >> testCanvasDirtyWhenShapeIsAddedInCompositeOutSideOfIt [
+
+	| composite canvasForm box position |
+	composite := RSComposite new
+		             extent: 100 asPoint;
+		             position: 50 asPoint;
+		             color: Color black;
+		             yourself.
+	box := RSBox new
+		       extent: 50 asPoint;
+		       color: Color red;
+		       position: 100 asPoint;
+		       yourself.
+	canvas add: composite.
+	canvasForm := canvas asForm.
+	composite add: box.
+	self
+		assert: canvas dirtyRectangle
+		equals: (125 asPoint corner: 175 asPoint).
+	canvasForm := canvas asForm.
+
+	position := canvas extent / 2 + 150 asPoint.
+	self assert: (canvasForm colorAt: position) equals: Color red
+]
+
+{ #category : #'tests - dirty areas' }
 RSCanvasTest >> testCanvasDirtyWhenShapePositionChange [
 
 	| box |

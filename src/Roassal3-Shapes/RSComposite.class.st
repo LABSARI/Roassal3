@@ -353,6 +353,16 @@ RSComposite >> hasChildren [
 	^ children notNil and: [ children isNotEmpty ]
 ]
 
+{ #category : #'accessing - computed' }
+RSComposite >> hasChildrenAtRectangle: aRectangle [
+
+	| newRectangle |
+	newRectangle := self
+		                computeEncompassingRectangleFor: aRectangle
+		                matrix: matrix.
+	^ (self shapeCollection shapesAtRectangle: newRectangle) notEmpty
+]
+
 { #category : #initialization }
 RSComposite >> initialize [
 	super initialize.
