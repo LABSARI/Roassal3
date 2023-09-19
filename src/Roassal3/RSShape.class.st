@@ -367,12 +367,6 @@ RSShape >> hasChildren [
 	^ false
 ]
 
-{ #category : #'accessing - computed' }
-RSShape >> hasChildrenAtRectangle: aRectangle [
-
-	^ false
-]
-
 { #category : #testing }
 RSShape >> hasEventCallback [
 	"Return true if at least one event callback has been added to the shape"

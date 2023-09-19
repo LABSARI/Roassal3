@@ -174,7 +174,7 @@ RSCanvasTest >> testCanvasDirtyWhenShapeIsAddedInCompositeOutSideOfIt [
 	canvasForm := canvas asForm.
 
 	position := canvas extent / 2 + 150 asPoint.
-	self assert: (canvasForm colorAt: position) equals: Color red
+	self assert: (canvasForm colorAt: position) equals: canvas background
 ]
 
 { #category : #'tests - dirty areas' }

@@ -22,7 +22,8 @@ Class {
 		'canvasRect',
 		'showRectangles',
 		'originMatrix',
-		'surface'
+		'surface',
+		'dirtyRectangle'
 	],
 	#category : #'Roassal3-Rendering'
 }
@@ -586,8 +587,8 @@ RSAthensRenderer >> surface: anObject [
 ]
 
 { #category : #visiting }
-RSAthensRenderer >> transform: dirtyRectangle [
-	^ Rectangle encompassing: (dirtyRectangle corners 
+RSAthensRenderer >> transform: aRectangle [
+	^ Rectangle encompassing: (aRectangle corners 
 		collect: [:corner | matrix transform: corner]).
 ]
 
@@ -633,15 +634,14 @@ RSAthensRenderer >> visitCamera: camera [
 { #category : #visiting }
 RSAthensRenderer >> visitCanvas: aRSCanvas [
 
-	| dirtyRectangle transformeDirtyRectangle |
+	| transformeDirtyRectangle |
 	dirtyRectangle := aRSCanvas dirtyRectangle.
 	dirtyRectangle ifNil: [ ^ self ].
 
 	matrix := AthensAffineTransform new.
 	originMatrix := matrix copy.
 	canvasRect := aRSCanvas visibleRectangle.
-	
-	
+		
 	showRectangles := aRSCanvas shouldShowRectangles.
 	athensCanvas fillRuleEvenOdd.
 	athensCanvas setAA: aRSCanvas antialiasing. 
@@ -650,7 +650,7 @@ RSAthensRenderer >> visitCanvas: aRSCanvas [
 	transformeDirtyRectangle := self transform: dirtyRectangle.
 	self clearRectangle: transformeDirtyRectangle.
 	athensCanvas clipBy: transformeDirtyRectangle during: [ 
-		(aRSCanvas shapeCollection shapesAtRectangle: dirtyRectangle) accept: self ].
+		(aRSCanvas shapeCollection shapesAtRectangle: dirtyRectangle) traceCr accept: self ].
 
 	"We display the elements that are _NOT_ subject to the camera"
 	matrix loadIdentity.
@@ -662,22 +662,23 @@ RSAthensRenderer >> visitCanvas: aRSCanvas [
 
 { #category : #'visiting - helpers' }
 RSAthensRenderer >> visitChildrenIfNecessary: shape [
-	| draw visibleChildren rectangle |
+	| visibleChildren rectangle |
 	shape hasChildren ifFalse: [ ^ self ].
-	rectangle := shape computeInverseEncompassingRectangleFor: canvasRect matrix: originMatrix.
 	
-	"self flag: 'TODO: consider rotration on composites'."
-	shape clipChildren 
-		ifTrue: [ rectangle := 
+	"dirtyRectangle traceCr.
+	dirtyRectangle extent traceCr."
+	rectangle := shape computeInverseEncompassingRectangleFor: dirtyRectangle matrix: originMatrix.
+	
+	rectangle :=
 			(rectangle origin max: shape baseRectangle origin) 
-				corner: (rectangle corner min: shape baseRectangle corner) ].
+				corner: (rectangle corner min: shape baseRectangle corner).
+	"rectangle traceCr.
+	rectangle extent traceCr.
+	'' traceCr."		
 	visibleChildren := shape shapeCollection shapesAtRectangle: rectangle.
-
-	draw := [ visibleChildren accept: self ].
-	
-	shape clipChildren
-		ifTrue: [ athensCanvas clipBy: shape path during: draw ]
-		ifFalse: [ draw value ]
+	visibleChildren traceCr.
+	athensCanvas clipBy: shape path during: [
+		visibleChildren accept: self ].
 ]
 
 { #category : #visiting }

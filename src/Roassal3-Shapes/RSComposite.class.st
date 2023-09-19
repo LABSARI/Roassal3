@@ -120,7 +120,6 @@ Class {
 	#instVars : [
 		'nodes',
 		'children',
-		'clipChildren',
 		'lines'
 	],
 	#category : #'Roassal3-Shapes-Bounding'
@@ -247,9 +246,8 @@ RSComposite >> addRecursivelyIn: aCollection [
 RSComposite >> addShapesIn: aCollection position: position [
 	| pos result includesPoint |
 	includesPoint := self includesPoint: position.
-	self clipChildren ifTrue: [ 
-		includesPoint ifFalse: [ ^ self ].
-		 ].
+	includesPoint ifFalse: [ ^ self ].
+	
 	pos := self matrix rsInverseTransform: position.
 	result := self shapeCollection shapesAtPoint: pos.
 	aCollection addAll: result.
@@ -312,16 +310,6 @@ RSComposite >> children: aRSGroup [
 	self adjustToChildren
 ]
 
-{ #category : #accessing }
-RSComposite >> clipChildren [
-	^ clipChildren
-]
-
-{ #category : #accessing }
-RSComposite >> clipChildren: aBoolean [
-	clipChildren := aBoolean
-]
-
 { #category : #copying }
 RSComposite >> copyWithoutAnnouncer [
 	| copy |
@@ -353,23 +341,12 @@ RSComposite >> hasChildren [
 	^ children notNil and: [ children isNotEmpty ]
 ]
 
-{ #category : #'accessing - computed' }
-RSComposite >> hasChildrenAtRectangle: aRectangle [
-
-	| newRectangle |
-	newRectangle := self
-		                computeEncompassingRectangleFor: aRectangle
-		                matrix: matrix.
-	^ (self shapeCollection shapesAtRectangle: newRectangle) notEmpty
-]
-
 { #category : #initialization }
 RSComposite >> initialize [
 	super initialize.
 	self shapeCollection: self defaultShapeCollection.
 	children := RSGroup new.
 	self paint: nil.
-	self clipChildren: false.
 	self resetPath
 ]
 
@@ -587,6 +564,7 @@ c @ RSCanvasController
 RSComposite >> updateDirtyRectangleWith: aRectangle [
 	| newRectangle |
 	parent ifNil:[ ^ self ].
-	newRectangle := self computeEncompassingRectangleFor: aRectangle matrix: matrix.
+	newRectangle := baseRectangle intersect: aRectangle.
+	newRectangle := self computeEncompassingRectangleFor: newRectangle matrix: matrix.
 	parent updateDirtyRectangleWith: newRectangle.
 ]
