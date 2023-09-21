@@ -117,7 +117,10 @@ RSBoundingShape >> basicTranslateBy: delta [
 
 { #category : #'accessing - computed' }
 RSBoundingShape >> computeEncompassingRectangle [
-	^ self computeEncompassingRectangleFor: self baseRectangle
+	| rectangle |
+	rectangle := self baseRectangle.
+	self hasBorder ifTrue: [ rectangle := rectangle expandBy: border width / 2].
+	^ self computeEncompassingRectangleFor: rectangle.
 ]
 
 { #category : #accessing }

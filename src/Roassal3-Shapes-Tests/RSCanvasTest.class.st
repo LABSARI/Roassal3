@@ -213,9 +213,28 @@ RSCanvasTest >> testDeepNodes [
 				 compo })
 ]
 
-{ #category : #'tests - shapes ordering' }
+{ #category : #tests }
 RSCanvasTest >> testDefaultShapeCollection [
-	self assert: canvas shapeCollection class equals: RSSequenceableCollection
+	|  collection |
+	collection := canvas shapeCollection.
+	self assert: collection class equals: canvas defaultShapeCollection class.
+	self assert: collection isCollection.
+	self assert: collection isEmpty.
+	
+]
+
+{ #category : #'tests - dirty areas' }
+RSCanvasTest >> testDirtyAreaIncludesBorder [
+
+	| box |
+	box := RSBox new
+		       size: 10; 
+		       yourself.
+	box border: (RSBorder new
+			 width: 4;
+			 yourself).
+	canvas add: box.
+	self assert: canvas dirtyRectangle equals: (-7 asPoint corner: 7 asPoint)
 ]
 
 { #category : #running }

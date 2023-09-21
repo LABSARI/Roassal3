@@ -44,6 +44,19 @@ RSShapeTest >> testEmptyIndexesArray [
 ]
 
 { #category : #tests }
+RSShapeTest >> testEncompassingRectangleContainsBorderWidth [
+
+	| box |
+	box := RSBox new
+		       size: 10;
+		       yourself.
+	box border: (RSBorder new
+			 width: 4;
+			 yourself).
+	self assert: box encompassingRectangle equals: (-7 asPoint corner: 7 asPoint)
+]
+
+{ #category : #tests }
 RSShapeTest >> testHasModel [
 
 	self deny: RSCircle new hasModel.

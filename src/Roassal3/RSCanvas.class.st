@@ -384,6 +384,7 @@ RSCanvas >> initialize [
 	shapes := RSGroup new.
 	fixedShapes := RSGroup new.
 	self shapeCollection: self defaultShapeCollection.
+	self shouldClearBackground: false.
 	nodes := RSGroup new.
 	edges := RSGroup new.
 	animations := OrderedCollection new.
