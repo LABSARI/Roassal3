@@ -442,12 +442,12 @@ RSAthensRenderer >> builder [
 ]
 
 { #category : #visiting }
-RSAthensRenderer >> clearRectangle: dirtyRectangle [
+RSAthensRenderer >> clearRectangle: rectangle [
 	athensCanvas paintMode restoreAfter: [
 			athensCanvas paintMode source.
 			athensCanvas
 				setPaint: Color transparent;
-				drawShape: dirtyRectangle ]
+				drawShape: rectangle ]
 ]
 
 { #category : #utilities }
@@ -588,8 +588,10 @@ RSAthensRenderer >> surface: anObject [
 
 { #category : #visiting }
 RSAthensRenderer >> transform: aRectangle [
-	^ Rectangle encompassing: (aRectangle corners 
-		collect: [:corner | matrix transform: corner]).
+	| r |
+	r  := (Rectangle encompassing: (aRectangle corners 
+		collect: [:corner | matrix transform: corner])).
+	^ r origin asIntegerPoint corner: r corner x ceiling @ r corner y ceiling.
 ]
 
 { #category : #visiting }
@@ -636,21 +638,23 @@ RSAthensRenderer >> visitCanvas: aRSCanvas [
 
 	| transformeDirtyRectangle |
 	dirtyRectangle := aRSCanvas dirtyRectangle.
-	dirtyRectangle ifNil: [ ^ self ].
 
+	dirtyRectangle ifNil: [ ^ self ].
+	
 	matrix := AthensAffineTransform new.
 	originMatrix := matrix copy.
 	canvasRect := aRSCanvas visibleRectangle.
-		
+
 	showRectangles := aRSCanvas shouldShowRectangles.
 	athensCanvas fillRuleEvenOdd.
-	athensCanvas setAA: aRSCanvas antialiasing. 
+	athensCanvas setAA: aRSCanvas antialiasing.
 
 	aRSCanvas camera accept: self.
 	transformeDirtyRectangle := self transform: dirtyRectangle.
 	self clearRectangle: transformeDirtyRectangle.
-	athensCanvas clipBy: transformeDirtyRectangle during: [ 
-		(aRSCanvas shapeCollection shapesAtRectangle: dirtyRectangle) traceCr accept: self ].
+	athensCanvas clipBy: transformeDirtyRectangle during: [
+		(aRSCanvas shapeCollection shapesAtRectangle: dirtyRectangle)
+			accept: self ].
 
 	"We display the elements that are _NOT_ subject to the camera"
 	matrix loadIdentity.
@@ -748,7 +752,7 @@ RSAthensRenderer >> visitShadowRectLineIfNecessary: line [
 { #category : #'visiting - helpers' }
 RSAthensRenderer >> visitShadowRectangleIfNecessary: shape [
 	showRectangles ifFalse: [ ^ self ].
-	self drawShadowRectangle: shape baseRectangle
+	self drawShadowRectangle: shape baseRectangleWithBorder.
 ]
 
 { #category : #'visiting - helpers' }

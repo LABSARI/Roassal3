@@ -565,6 +565,8 @@ RSComposite >> updateDirtyRectangleWith: aRectangle [
 	| newRectangle |
 	parent ifNil:[ ^ self ].
 	newRectangle := baseRectangle intersect: aRectangle.
+	"nothing to see; then we skip"
+	newRectangle isZero ifTrue: [ ^ self ].
 	newRectangle := self computeEncompassingRectangleFor: newRectangle matrix: matrix.
 	parent updateDirtyRectangleWith: newRectangle.
 ]

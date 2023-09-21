@@ -168,9 +168,7 @@ RSCanvasTest >> testCanvasDirtyWhenShapeIsAddedInCompositeOutSideOfIt [
 	canvas add: composite.
 	canvasForm := canvas asForm.
 	composite add: box.
-	self
-		assert: canvas dirtyRectangle
-		equals: (125 asPoint corner: 175 asPoint).
+	self assert: canvas dirtyRectangle isNil.
 	canvasForm := canvas asForm.
 
 	position := canvas extent / 2 + 150 asPoint.
