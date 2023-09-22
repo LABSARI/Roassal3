@@ -36,6 +36,62 @@ RSShapeTest >> testAllConnectedShapes [
 ]
 
 { #category : #tests }
+RSShapeTest >> testBorderDoUpdatesInvalidateShape [
+
+	| box |
+	box := RSBox new
+		       size: 20;
+		       yourself.
+	self
+		assert: box encompassingRectangle
+		equals: (-10 asPoint corner: 10 asPoint).
+	box borderDo: [ :border |
+		border
+			width: 12;
+			dashArray: #( 3 1 2 ) ].
+	self
+		assert: box encompassingRectangle
+		equals: (-16 asPoint corner: 16 asPoint)
+]
+
+{ #category : #tests }
+RSShapeTest >> testChangeBorderUpdatesEncompassingRectangle [
+
+	| box |
+	box := RSBox new
+		       size: 20;
+		       yourself.
+	self
+		assert: box encompassingRectangle
+		equals: (-10 asPoint corner: 10 asPoint).
+	box border: (RSBorder new
+			 width: 8;
+			 yourself).
+	self
+		assert: box encompassingRectangle
+		equals: (-14 asPoint corner: 14 asPoint)
+]
+
+{ #category : #tests }
+RSShapeTest >> testChangeBorderWidthUpdatesEncompassingRectangle [
+
+	| box |
+	box := RSBox new
+		       size: 20;
+		       yourself.
+	box border: (RSBorder new
+			 width: 8;
+			 yourself).
+	self
+		assert: box encompassingRectangle
+		equals: (-14 asPoint corner: 14 asPoint).
+	box borderWidth: 12.
+	self
+		assert: box encompassingRectangle
+		equals: (-16 asPoint corner: 16 asPoint)
+]
+
+{ #category : #tests }
 RSShapeTest >> testEmptyIndexesArray [
 
 	| box |

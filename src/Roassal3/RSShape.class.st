@@ -169,7 +169,9 @@ RSShape >> border [
 
 { #category : #border }
 RSShape >> border: aBorder [
-	border := aBorder
+
+	border := aBorder.
+	self resetBBox
 ]
 
 { #category : #border }
@@ -195,13 +197,23 @@ c @ RSCanvasController.
 c open
 ```"
 	border ifNil: [ self withBorder ].
-	self border color: aColor
+	self border color: aColor.
+	self invalidate
+]
+
+{ #category : #border }
+RSShape >> borderDo: aBlock [
+	border ifNil: [ border := RSBorder new ].
+	aBlock value: border.
+	self resetBBox
 ]
 
 { #category : #border }
 RSShape >> borderWidth: aNumber [
+
 	border ifNil: [ self withBorder ].
-	self border width: aNumber
+	self border width: aNumber.
+	self resetBBox
 ]
 
 { #category : #accessing }
@@ -517,7 +529,8 @@ RSShape >> model: anObject [
 
 { #category : #border }
 RSShape >> noBorder [
-	border := nil
+	border := nil.
+	self resetBBox
 ]
 
 { #category : #accessing }
@@ -703,4 +716,9 @@ RSShape >> width [
 { #category : #accessing }
 RSShape >> width: aNumber [
 	self subclassResponsibility
+]
+
+{ #category : #border }
+RSShape >> withBorder [
+	self border: RSBorder new
 ]

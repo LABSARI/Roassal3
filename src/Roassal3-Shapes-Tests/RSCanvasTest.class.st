@@ -189,6 +189,29 @@ RSCanvasTest >> testCanvasDirtyWhenShapePositionChange [
 		equals: (-5 asPoint corner: 15 asPoint)
 ]
 
+{ #category : #'tests - dirty areas' }
+RSCanvasTest >> testChangeBorderWidthUpdatesDirtyRectangle [
+	| box border |
+	box := RSBox new
+		       size: 20;
+		       yourself.
+	border := RSBorder new
+		          width: 8;
+		          yourself.
+	box border: border.
+	canvas add: box.
+	self
+		assert: canvas dirtyRectangle
+		equals: (-14 asPoint corner: 14 asPoint).
+	canvas asForm.
+	border width: 12.
+	box resetBBox.
+	self
+		assert: canvas dirtyRectangle
+		equals: (-16 asPoint corner: 16 asPoint).
+	self
+]
+
 { #category : #tests }
 RSCanvasTest >> testDeepNodes [
 
