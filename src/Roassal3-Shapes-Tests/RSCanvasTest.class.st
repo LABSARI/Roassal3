@@ -36,6 +36,22 @@ RSCanvasTest >> testAddShapeBefore [
 	self assert: canvas shapes asArray equals: { box . ellipse }
 ]
 
+{ #category : #'tests - dirty areas' }
+RSCanvasTest >> testAddingFixedShapeUpdatesDirtyArea [
+
+	| box rectangle camera transformedRectangle |
+	box := RSBox new
+		       size: 20;
+		       setAsFixed;
+		position: 0 asPoint;
+		       yourself.
+	canvas add: box.
+	rectangle := -10 asPoint corner: 10 asPoint.
+	camera := canvas camera.
+	transformedRectangle := camera originMode visibleRectangleFor: camera rectangle: rectangle.
+	self assert: canvas dirtyRectangle equals: transformedRectangle.
+]
+
 { #category : #tests }
 RSCanvasTest >> testAntialiasing [
 	| morph |
@@ -212,6 +228,24 @@ RSCanvasTest >> testChangeBorderWidthUpdatesDirtyRectangle [
 	self
 ]
 
+{ #category : #'tests - dirty areas' }
+RSCanvasTest >> testChangeCameraPositionUpdatesDirtyRectangle [
+
+	| camera |
+	camera := canvas camera.
+	camera position: 10 asPoint.
+	self assert: canvas dirtyRectangle equals: camera visibleRectangle
+]
+
+{ #category : #'tests - dirty areas' }
+RSCanvasTest >> testChangeCameraScaleUpdatesDirtyRectangle [
+
+	| camera |
+	camera := canvas camera.
+	camera scale: 2.
+	self assert: canvas dirtyRectangle equals: camera visibleRectangle
+]
+
 { #category : #tests }
 RSCanvasTest >> testDeepNodes [
 
@@ -359,6 +393,25 @@ RSCanvasTest >> testLowLevelEvent [
 	self
 		assert: (canvas shapeWithAction: RSMouseDragging forPositionInPixels: 250 @ 250)
 		identicalTo: box
+]
+
+{ #category : #'tests - dirty areas' }
+RSCanvasTest >> testMoveFixedShapeShouldUpdatesDirtyRectangle [
+
+	| fixedBox rectangle camera transformedRectangle |
+	fixedBox := RSBox new
+		            size: 20;
+		            setAsFixed;
+		            yourself.
+	canvas add: fixedBox.
+	canvas asForm.
+	fixedBox translateTo: 10 @ 10.
+	rectangle := -10 asPoint corner: 20 asPoint.
+	camera := canvas camera.
+	transformedRectangle := camera originMode
+		                        visibleRectangleFor: camera
+		                        rectangle: rectangle.
+	self assert: canvas dirtyRectangle equals: transformedRectangle
 ]
 
 { #category : #'tests - opening' }
@@ -541,6 +594,26 @@ RSCanvasTest >> testPushFront [
 
 	c pushBack: blueBox.
 	self assert: c shapes asArray equals: { blueBox . redBox }
+]
+
+{ #category : #'tests - dirty areas' }
+RSCanvasTest >> testRemovingFixedShapeUpdatesDirtyArea [
+
+	| box rectangle camera transformedRectangle |
+	box := RSBox new
+		       size: 20;
+		       setAsFixed;
+		position: 0 asPoint;
+		       yourself.
+	canvas add: box.
+	
+	canvas asForm.
+	
+	box remove.
+	rectangle := -10 asPoint corner: 10 asPoint.
+	camera := canvas camera.
+	transformedRectangle := camera originMode visibleRectangleFor: camera rectangle: rectangle.
+	self assert: canvas dirtyRectangle equals: transformedRectangle.
 ]
 
 { #category : #'tests - shapes ordering' }

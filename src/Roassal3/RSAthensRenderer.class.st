@@ -638,7 +638,6 @@ RSAthensRenderer >> visitCanvas: aRSCanvas [
 
 	| transformeDirtyRectangle |
 	dirtyRectangle := aRSCanvas dirtyRectangle.
-
 	dirtyRectangle ifNil: [ ^ self ].
 	
 	matrix := AthensAffineTransform new.
@@ -648,19 +647,24 @@ RSAthensRenderer >> visitCanvas: aRSCanvas [
 	showRectangles := aRSCanvas shouldShowRectangles.
 	athensCanvas fillRuleEvenOdd.
 	athensCanvas setAA: aRSCanvas antialiasing.
-
 	aRSCanvas camera accept: self.
 	transformeDirtyRectangle := self transform: dirtyRectangle.
 	self clearRectangle: transformeDirtyRectangle.
 	athensCanvas clipBy: transformeDirtyRectangle during: [
 		(aRSCanvas shapeCollection shapesAtRectangle: dirtyRectangle)
+		
 			accept: self ].
-
+	
+	
 	"We display the elements that are _NOT_ subject to the camera"
+	
+	dirtyRectangle := transformeDirtyRectangle.
 	matrix loadIdentity.
 	originMatrix loadIdentity.
-	canvasRect := 0 @ 0 extent: aRSCanvas extent.
-	aRSCanvas fixedShapes accept: self.
+	athensCanvas pathTransform loadIdentity.
+	athensCanvas clipBy: transformeDirtyRectangle during: [
+		(aRSCanvas fixedShapes shapesAtRectangle: dirtyRectangle) accept: self.
+	].
 	aRSCanvas resetDirtyRectangle
 ]
 
@@ -680,7 +684,7 @@ RSAthensRenderer >> visitChildrenIfNecessary: shape [
 	rectangle extent traceCr.
 	'' traceCr."		
 	visibleChildren := shape shapeCollection shapesAtRectangle: rectangle.
-	visibleChildren traceCr.
+	
 	athensCanvas clipBy: shape path during: [
 		visibleChildren accept: self ].
 ]
@@ -762,12 +766,7 @@ RSAthensRenderer >> visitShapeIfNecessary: shape block: aBlock [
 		shapeMatrix := shape matrix asFloatTransform.
 		matrix multiplyBy: shapeMatrix.
 		originMatrix restoreAfter: [
-			| rect |
 			originMatrix multiplyBy: shapeMatrix.
-			rect := shape
-				computeEncompassingRectangleFor: shape baseRectangle
-				matrix: originMatrix.
-			(rect intersects: canvasRect) ifFalse: [ ^ self ].
-				aBlock value ].
+			aBlock value ].
 	]
 ]

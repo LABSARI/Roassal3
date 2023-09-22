@@ -451,10 +451,15 @@ RSShape >> intersects: aRectangle [
 
 { #category : #'dirty areas' }
 RSShape >> invalidate [
-
+	| camera rectangle |
 	parent ifNil: [ ^ self ].
 	self isDirty: true.
-	parent updateDirtyRectangleWith: self encompassingRectangle
+	rectangle := self encompassingRectangle.
+	(self isFixed and: [self isInACanvas] )ifTrue: [
+		camera := parent camera.
+		rectangle := camera originMode visibleRectangleFor: camera rectangle: rectangle.
+		 ].
+	parent updateDirtyRectangleWith: rectangle.
 ]
 
 { #category : #testing }
@@ -631,15 +636,16 @@ RSShape >> renderOn: aCanvas [
 RSShape >> resetBBox [
 
 	| shouldUpdate |
-	shouldUpdate := parent notNil and: [ self isFixed not ].
+	shouldUpdate := parent notNil.
 
 	shouldUpdate
-		ifTrue: [
-			"We have to update the dirty rectangle with the old position first."
+		ifTrue: [ "We have to update the dirty rectangle with the old position first."
 			self invalidate.
-			parent updateInShapeCollection: self.
+			self isFixed
+				ifTrue: [ encompassingRectangle := nil ]
+				ifFalse: [ parent updateInShapeCollection: self ].
 			"We then have to update the dirty rectangle with the new position."
-			self invalidate. ]
+			self invalidate ]
 		ifFalse: [ encompassingRectangle := nil ]
 ]
 
@@ -663,9 +669,10 @@ RSShape >> setAsFixed [
 	"Per default, a shape is subject to the camera mouvement. If the camera is relocated, shapes appears to be relocated. This behavior can be avoided by sending the message #setAsFixed to a shape, which makes the shape fixed in the canvas. This is useful to define menus.
 
 	The message setAsFixed must be send after being added to a canvas"
-	parent ifNil: [ self error: 'Add first this shape in the canvas' ].
-	parent setAsFixed: self.
-	isFixed := true
+	
+	parent ifNotNil: [ parent setAsFixed: self. ^ self ].
+	isFixed := true.
+	
 ]
 
 { #category : #accessing }

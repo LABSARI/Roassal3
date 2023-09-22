@@ -136,6 +136,7 @@ c @ RSCanvasController.
 "
 	fixedShapes add: aShape.
 	aShape shapeIndex: fixedShapes size.
+	aShape invalidate
 ]
 
 { #category : #animations }
@@ -283,10 +284,16 @@ RSCanvas >> defaultExtent [
 	^ 500@500
 ]
 
-{ #category : #'accessing - computed' }
+{ #category : #'dirty areas' }
 RSCanvas >> dirtyRectangle [
 
 	^ host dirtyRectangle 
+]
+
+{ #category : #'dirty areas' }
+RSCanvas >> dirtyRectangle: rectangle [
+
+	host dirtyRectangle: rectangle
 ]
 
 { #category : #antialiasing }
@@ -590,6 +597,7 @@ RSCanvas >> removeFixedShape: aShape [
 { #category : #'adding - removing shapes' }
 RSCanvas >> removeShape: shape [
 	| evt collection |
+	shape invalidate.
 	collection := shape isFixed
 		ifTrue: [ fixedShapes ]
 		ifFalse: [ shapes ].
@@ -604,7 +612,7 @@ RSCanvas >> removeShape: shape [
 		       canvas: self;
 		       yourself.
 	self announce: evt.
-	shape announce: evt
+	shape announce: evt.
 ]
 
 { #category : #'dirty areas' }
