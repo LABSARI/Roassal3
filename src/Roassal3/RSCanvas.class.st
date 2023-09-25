@@ -136,6 +136,7 @@ c @ RSCanvasController.
 "
 	fixedShapes add: aShape.
 	aShape shapeIndex: fixedShapes size.
+	aShape invalidate
 ]
 
 { #category : #animations }
@@ -283,6 +284,18 @@ RSCanvas >> defaultExtent [
 	^ 500@500
 ]
 
+{ #category : #'dirty areas' }
+RSCanvas >> dirtyRectangle [
+
+	^ host dirtyRectangle 
+]
+
+{ #category : #'dirty areas' }
+RSCanvas >> dirtyRectangle: rectangle [
+
+	host dirtyRectangle: rectangle
+]
+
 { #category : #antialiasing }
 RSCanvas >> disableAntialiasing [
 	self hasAntialiasing: false
@@ -378,6 +391,7 @@ RSCanvas >> initialize [
 	shapes := RSGroup new.
 	fixedShapes := RSGroup new.
 	self shapeCollection: self defaultShapeCollection.
+	self shouldClearBackground: false.
 	nodes := RSGroup new.
 	edges := RSGroup new.
 	animations := OrderedCollection new.
@@ -583,6 +597,7 @@ RSCanvas >> removeFixedShape: aShape [
 { #category : #'adding - removing shapes' }
 RSCanvas >> removeShape: shape [
 	| evt collection |
+	shape invalidate.
 	collection := shape isFixed
 		ifTrue: [ fixedShapes ]
 		ifFalse: [ shapes ].
@@ -597,7 +612,13 @@ RSCanvas >> removeShape: shape [
 		       canvas: self;
 		       yourself.
 	self announce: evt.
-	shape announce: evt
+	shape announce: evt.
+]
+
+{ #category : #'dirty areas' }
+RSCanvas >> resetDirtyRectangle [
+
+	host dirtyRectangle: nil
 ]
 
 { #category : #antialiasing }
@@ -676,6 +697,12 @@ RSCanvas >> shapesFromModels: objects [
 	^ self nodes shapesFromModels: objects
 ]
 
+{ #category : #rendering }
+RSCanvas >> shapesToRender [
+
+	^ shapes select: [ :s | s isDirty ]
+]
+
 { #category : #'event processing' }
 RSCanvas >> shapesWithActionForPosition: aPositionInSpace [
 	| result |
@@ -734,6 +761,12 @@ RSCanvas >> signalUpdate [
 { #category : #'accessing - computed' }
 RSCanvas >> transform: aPoint [
 	^ aPoint
+]
+
+{ #category : #'dirty areas' }
+RSCanvas >> updateDirtyRectangleWith: aRectangle [
+
+	host updateDirtyRectangleWith: aRectangle
 ]
 
 { #category : #accessing }

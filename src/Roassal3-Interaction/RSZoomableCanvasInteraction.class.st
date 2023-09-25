@@ -55,6 +55,7 @@ RSZoomableCanvasInteraction class >> zoomMove: aCanvas pixelPosition: morphPosit
 			newPosition := camera fromSpaceToPixel: position.
 			zero := camera fromSpaceToPixel: 0@0.
 			camera matrix translation: morphPosition - (newPosition - zero)-(camera originMode gapDistance: camera).
+			camera invalidate.
 			aCanvas signalUpdate ]
 ]
 

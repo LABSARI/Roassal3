@@ -204,18 +204,20 @@ RSScrollBarsCanvasInteraction >> updateAnimation [
 
 { #category : #hooks }
 RSScrollBarsCanvasInteraction >> updateBasicScrollbars [
-	| canvas canvasRect shapesRect p pd ext scrollExtent |
+	| canvas canvasRect shapesRect p pd ext scrollExtent size |
 	canvas := vertical canvas.
 	canvasRect := canvas visibleRectangle.
 	shapesRect := self encompassingRectangleFor: canvas.
 	
 	scrollExtent := vertical width @ horizontal height.
-	p := canvas extent - 1 - (scrollExtent / 2).
+	p := canvas extent - (scrollExtent / 2).
+	size := 10.
 	
 	pd := canvas extent * (canvasRect floatCenter - shapesRect origin) / shapesRect extent.
 	ext := canvasRect extent * canvas extent / shapesRect extent.
-	vertical position: p x @ pd y ; height: (ext y max: self minBarSize).
-	horizontal position: pd x @ p y; width: (ext x max: self minBarSize)
+	
+	vertical position: p x @ pd y ; extent: size @ (ext y max: self minBarSize).
+	horizontal position: pd x @ p y; extent: (ext x max: self minBarSize) @ size.
 	
 ]
 
