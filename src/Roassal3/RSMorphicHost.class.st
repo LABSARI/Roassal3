@@ -26,8 +26,11 @@ RSMorphicHost >> dirtyRectangle [
 
 { #category : #accessing }
 RSMorphicHost >> dirtyRectangle: anObject [
-
-	dirtyRectangle := anObject
+	| visibleRectangle |
+	dirtyRectangle := anObject.
+	dirtyRectangle ifNil: [ ^ self ].
+	visibleRectangle := canvas visibleRectangle.
+	dirtyRectangle := dirtyRectangle intersect: visibleRectangle
 ]
 
 { #category : #accessing }
@@ -72,7 +75,7 @@ RSMorphicHost >> signalUpdate [
 { #category : #adding }
 RSMorphicHost >> updateDirtyRectangleWith: aRectangle [
 
-	dirtyRectangle := dirtyRectangle
-		                  ifNil: [ aRectangle ]
-		                  ifNotNil: [ dirtyRectangle merge: aRectangle ]
+	self dirtyRectangle: (dirtyRectangle
+			 ifNil: [ aRectangle ]
+			 ifNotNil: [ dirtyRectangle merge: aRectangle ])
 ]

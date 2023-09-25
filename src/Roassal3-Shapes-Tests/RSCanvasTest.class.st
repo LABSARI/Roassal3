@@ -39,7 +39,7 @@ RSCanvasTest >> testAddShapeBefore [
 { #category : #'tests - dirty areas' }
 RSCanvasTest >> testAddingFixedShapeUpdatesDirtyArea [
 
-	| box rectangle camera transformedRectangle |
+	| box rectangle |
 	box := RSBox new
 		       size: 20;
 		       setAsFixed;
@@ -47,9 +47,7 @@ RSCanvasTest >> testAddingFixedShapeUpdatesDirtyArea [
 		       yourself.
 	canvas add: box.
 	rectangle := -10 asPoint corner: 10 asPoint.
-	camera := canvas camera.
-	transformedRectangle := camera originMode visibleRectangleFor: camera rectangle: rectangle.
-	self assert: canvas dirtyRectangle equals: transformedRectangle.
+	self assert: canvas dirtyRectangle equals: (-250 asPoint corner: -240 asPoint).
 ]
 
 { #category : #tests }
@@ -292,6 +290,15 @@ RSCanvasTest >> testDirtyAreaIncludesBorder [
 	self assert: canvas dirtyRectangle equals: (-7 asPoint corner: 7 asPoint)
 ]
 
+{ #category : #'tests - dirty areas' }
+RSCanvasTest >> testDirtyAreaIsNotOutsideTheVisibleRectangle [
+	| box |
+	box := RSBox new size: 100; position: 100 asPoint; color: Color black.
+	canvas extent: 200@200.
+	canvas add: box.
+	self assert: canvas dirtyRectangle equals: (50 asPoint corner: 100 asPoint).
+]
+
 { #category : #running }
 RSCanvasTest >> testDrawCanvas [
 	canvas addShape: (RSBox new
@@ -317,6 +324,16 @@ RSCanvasTest >> testDrawCanvasWithGroup [
 		yourself).
 	canvas addShape: g.
 	canvas createMorph drawOnMockCanvas
+]
+
+{ #category : #'tests - dirty areas' }
+RSCanvasTest >> testDrawDirtyRectangleInCanvas [
+
+	| form |
+	canvas showDirtyRectangle: true.
+	canvas dirtyRectangle: (-100 asPoint corner: 100 asPoint).
+	form := canvas asForm.
+	self deny: (form colorAt: (canvas extent / 2) asIntegerPoint) equals: canvas background
 ]
 
 { #category : #running }
@@ -398,20 +415,15 @@ RSCanvasTest >> testLowLevelEvent [
 { #category : #'tests - dirty areas' }
 RSCanvasTest >> testMoveFixedShapeShouldUpdatesDirtyRectangle [
 
-	| fixedBox rectangle camera transformedRectangle |
+	| fixedBox |
 	fixedBox := RSBox new
 		            size: 20;
 		            setAsFixed;
 		            yourself.
 	canvas add: fixedBox.
-	canvas asForm.
 	fixedBox translateTo: 10 @ 10.
-	rectangle := -10 asPoint corner: 20 asPoint.
-	camera := canvas camera.
-	transformedRectangle := camera originMode
-		                        visibleRectangleFor: camera
-		                        rectangle: rectangle.
-	self assert: canvas dirtyRectangle equals: transformedRectangle
+	
+	self assert: canvas dirtyRectangle equals: (-250 asPoint corner: -230 asPoint)
 ]
 
 { #category : #'tests - opening' }
@@ -599,21 +611,16 @@ RSCanvasTest >> testPushFront [
 { #category : #'tests - dirty areas' }
 RSCanvasTest >> testRemovingFixedShapeUpdatesDirtyArea [
 
-	| box rectangle camera transformedRectangle |
+	| box |
 	box := RSBox new
 		       size: 20;
 		       setAsFixed;
 		position: 0 asPoint;
 		       yourself.
 	canvas add: box.
-	
 	canvas asForm.
-	
 	box remove.
-	rectangle := -10 asPoint corner: 10 asPoint.
-	camera := canvas camera.
-	transformedRectangle := camera originMode visibleRectangleFor: camera rectangle: rectangle.
-	self assert: canvas dirtyRectangle equals: transformedRectangle.
+	self assert: canvas dirtyRectangle equals: (-250 asPoint corner: -240 asPoint).
 ]
 
 { #category : #'tests - shapes ordering' }

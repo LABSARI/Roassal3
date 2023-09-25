@@ -35,7 +35,8 @@ Class {
 		'animations',
 		'extent',
 		'color',
-		'host'
+		'host',
+		'showDirtyRectangle'
 	],
 	#pools : [
 		'AthensCairoDefinitions'
@@ -392,6 +393,7 @@ RSCanvas >> initialize [
 	fixedShapes := RSGroup new.
 	self shapeCollection: self defaultShapeCollection.
 	self shouldClearBackground: false.
+	self showDirtyRectangle: false.
 	nodes := RSGroup new.
 	edges := RSGroup new.
 	animations := OrderedCollection new.
@@ -744,6 +746,18 @@ RSCanvas >> shouldShowRectangles [
 { #category : #'debug support' }
 RSCanvas >> shouldShowRectangles: aBoolean [
 	self propertyAt: #shouldShowRectangles put: aBoolean
+]
+
+{ #category : #'dirty areas' }
+RSCanvas >> showDirtyRectangle [
+
+	^ showDirtyRectangle
+]
+
+{ #category : #'dirty areas' }
+RSCanvas >> showDirtyRectangle: aBoolean [ 
+	
+	showDirtyRectangle := aBoolean
 ]
 
 { #category : #'debug support' }

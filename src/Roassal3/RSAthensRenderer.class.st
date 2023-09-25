@@ -636,14 +636,15 @@ RSAthensRenderer >> visitCamera: camera [
 { #category : #visiting }
 RSAthensRenderer >> visitCanvas: aRSCanvas [
 
-	| transformeDirtyRectangle |
+	| transformeDirtyRectangle oldDirtyRectangle |
 	dirtyRectangle := aRSCanvas dirtyRectangle.
 	dirtyRectangle ifNil: [ ^ self ].
-	
 	matrix := AthensAffineTransform new.
 	originMatrix := matrix copy.
 	canvasRect := aRSCanvas visibleRectangle.
-
+	aRSCanvas showDirtyRectangle ifTrue: [
+		oldDirtyRectangle := dirtyRectangle.
+		dirtyRectangle := canvasRect ].
 	showRectangles := aRSCanvas shouldShowRectangles.
 	athensCanvas fillRuleEvenOdd.
 	athensCanvas setAA: aRSCanvas antialiasing.
@@ -652,20 +653,25 @@ RSAthensRenderer >> visitCanvas: aRSCanvas [
 	self clearRectangle: transformeDirtyRectangle.
 	athensCanvas clipBy: transformeDirtyRectangle during: [
 		(aRSCanvas shapeCollection shapesAtRectangle: dirtyRectangle)
-		
 			accept: self ].
-	
-	
-	"We display the elements that are _NOT_ subject to the camera"
-	
 	dirtyRectangle := transformeDirtyRectangle.
 	matrix loadIdentity.
 	originMatrix loadIdentity.
 	athensCanvas pathTransform loadIdentity.
 	athensCanvas clipBy: transformeDirtyRectangle during: [
-		(aRSCanvas fixedShapes shapesAtRectangle: dirtyRectangle) accept: self.
-	].
-	aRSCanvas resetDirtyRectangle
+		(aRSCanvas fixedShapes shapesAtRectangle: dirtyRectangle) accept:
+			self ].
+	aRSCanvas resetDirtyRectangle.
+
+	aRSCanvas showDirtyRectangle ifFalse: [ ^ self ].
+
+	athensCanvas pathTransform loadIdentity.
+	matrix loadIdentity.
+	originMatrix loadIdentity.
+	aRSCanvas camera accept: self.
+	athensCanvas
+		setPaint: (Color purple alpha: 0.3);
+		drawShape: (self transform: oldDirtyRectangle).
 ]
 
 { #category : #'visiting - helpers' }
