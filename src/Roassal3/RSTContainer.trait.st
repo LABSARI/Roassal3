@@ -43,7 +43,8 @@ RSTContainer >> addBasicShape: aShape [
 	listOfShapes := self privateShapes.
 	listOfShapes add: aShape.
 	aShape shapeIndex: listOfShapes size.
-	shapeCollection add: aShape
+	shapeCollection add: aShape.
+	aShape invalidate.
 ]
 
 { #category : #'adding nodes edges' }
@@ -265,6 +266,7 @@ c.
 		addFirst: aShape.
 	aShape isFixed ifFalse: [ self shapeCollection pushBack: aShape ].
 	col doWithIndex: [ :each :index | each shapeIndex: index ].
+	aShape invalidate. 
 ]
 
 { #category : #actions }
@@ -297,7 +299,9 @@ The red circle is in front of the blue one, despite the red one is inserted firs
 	col
 		remove: aShape;
 		addLast: aShape.
+	aShape isFixed ifFalse: [ self shapeCollection pushFront: aShape ].
 	aShape shapeIndex to: col size do: [ :index | (col at: index) shapeIndex: index ].
+	aShape invalidate.
 ]
 
 { #category : #removing }
@@ -350,6 +354,11 @@ RSTContainer >> shapesFromModel: anObject [
 	"Retreive a shape from a given model. Return nil if not found"
 
 	^ self nodes shapesFromModel: anObject
+]
+
+{ #category : #'dirty areas' }
+RSTContainer >> updateDirtyRectangleWith: aRectangle [
+	self explicitRequirement
 ]
 
 { #category : #private }

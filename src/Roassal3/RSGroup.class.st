@@ -186,6 +186,11 @@ RSGroup >> shapeFromModelCache [
 	^ shapeFromModelCache
 ]
 
+{ #category : #'finding/searching' }
+RSGroup >> shapesAtRectangle: aRectangle [ 
+	^ self select: [ :each | each encompassingRectangle intersects: aRectangle ]
+]
+
 { #category : #accessing }
 RSGroup >> shapesFromModel: anObject [
 	"Return a shape that corresponds to the object provided as parameter. If none is found, then return nil.

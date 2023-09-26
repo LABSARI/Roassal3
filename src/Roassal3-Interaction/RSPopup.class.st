@@ -163,6 +163,7 @@ RSPopup >> createPopupFor: aShape event: event [
 	| popupShape |
 	popupShape := shapeBuilder shapeFor: (self modelFor: aShape).
 	popupShape isFixed: true.
+	self translatePopup: popupShape event: event.
 	event canvas addShape: popupShape.
 	^ popupShape
 ]
@@ -222,7 +223,7 @@ RSPopup >> text: oneArgBlock [
 RSPopup >> translatePopup: popup event: evt [
 	| p e extent |
 	p := evt camera fromSpaceToPixel: evt position.
-	extent := popup canvas extent.
+	extent := evt canvas extent.
 	e := (popup extent /2) + 5.
 	p x + popup width > extent x ifTrue: [
 		e := e x negated @ e y.

@@ -2,7 +2,8 @@ Class {
 	#name : #RSMorphicHost,
 	#superclass : #RSHost,
 	#instVars : [
-		'morph'
+		'morph',
+		'dirtyRectangle'
 	],
 	#category : #'Roassal3-Core'
 }
@@ -15,6 +16,22 @@ RSMorphicHost >> createMorph [
 	morph renderer: RSAthensRenderer new.
 	morph canvas: canvas.
 	^ morph
+]
+
+{ #category : #accessing }
+RSMorphicHost >> dirtyRectangle [
+
+	^ dirtyRectangle
+]
+
+{ #category : #accessing }
+RSMorphicHost >> dirtyRectangle: anObject [
+
+	| visibleRectangle |
+	dirtyRectangle := anObject.
+	dirtyRectangle ifNil: [ ^ self ].
+	visibleRectangle := canvas visibleRectangle.
+	dirtyRectangle := dirtyRectangle intersect: visibleRectangle
 ]
 
 { #category : #accessing }
@@ -54,4 +71,12 @@ RSMorphicHost >> signalUpdate [
 	"Signal a platform signal that the canvas should be refreshed. This is important when some shapes are modified (color or position)."
 
 	morph changed
+]
+
+{ #category : #adding }
+RSMorphicHost >> updateDirtyRectangleWith: aRectangle [
+
+	self dirtyRectangle: (dirtyRectangle
+			 ifNil: [ aRectangle ]
+			 ifNotNil: [ dirtyRectangle merge: aRectangle ])
 ]
