@@ -26,6 +26,7 @@ RSMorphicHost >> dirtyRectangle [
 
 { #category : #accessing }
 RSMorphicHost >> dirtyRectangle: anObject [
+
 	| visibleRectangle |
 	dirtyRectangle := anObject.
 	dirtyRectangle ifNil: [ ^ self ].
