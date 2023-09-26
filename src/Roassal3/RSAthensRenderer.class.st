@@ -574,6 +574,18 @@ RSAthensRenderer >> paintFor: shape form: form [
 			paint ]
 ]
 
+{ #category : #'visiting - helpers' }
+RSAthensRenderer >> showEncompassingRectangleForLineIfNecessary: line [
+	showRectangles ifFalse: [ ^ self ].
+	self drawShadowRectangle: line encompassingRectangle
+]
+
+{ #category : #'visiting - helpers' }
+RSAthensRenderer >> showEncompassingRectangleIfNecessary: shape [
+	showRectangles ifFalse: [ ^ self ].
+	self drawShadowRectangle: shape baseRectangleWithBorder.
+]
+
 { #category : #accessing }
 RSAthensRenderer >> surface [
 
@@ -622,7 +634,7 @@ RSAthensRenderer >> visitBoundingShape: shape [
 				setPaint: paint;
 				drawShape: path ].
 		self visitBorderIfNecessary: shape.
-		self visitShadowRectangleIfNecessary: shape.
+		self showEncompassingRectangleIfNecessary: shape.
 		self visitChildrenIfNecessary: shape.
 		shape isDirty: false
 	]
@@ -714,7 +726,7 @@ RSAthensRenderer >> visitLabel: label [
 
 		self visitLabelDecoratorsIfNecessary: label.
 		athensCanvas pathTransform translateBy: lbtranslation negated.
-		self visitShadowRectangleIfNecessary: label
+		self showEncompassingRectangleIfNecessary: label
 	]
 ]
 
@@ -739,8 +751,8 @@ RSAthensRenderer >> visitLabelDecoratorsIfNecessary: label [
 { #category : #visiting }
 RSAthensRenderer >> visitLine: line [
 	| path paint |
-	(line intersects: canvasRect) ifFalse: [ ^ self ].
-	athensCanvas pathTransform loadAffineTransform: matrix .
+	(line intersects: dirtyRectangle) ifFalse: [ ^ self ].
+	athensCanvas pathTransform loadAffineTransform: matrix.
 	path := self getOrCreatePathOf: line.
 	paint := line paintOn: self.
 
@@ -750,19 +762,7 @@ RSAthensRenderer >> visitLine: line [
 			drawShape: path ].
 	self visitBorderIfNecessary: line.
 	line markerShapesInPositionDo: [ :shape | shape accept: self ].
-	self visitShadowRectLineIfNecessary: line
-]
-
-{ #category : #'visiting - helpers' }
-RSAthensRenderer >> visitShadowRectLineIfNecessary: line [
-	showRectangles ifFalse: [ ^ self ].
-	self drawShadowRectangle: line encompassingRectangle
-]
-
-{ #category : #'visiting - helpers' }
-RSAthensRenderer >> visitShadowRectangleIfNecessary: shape [
-	showRectangles ifFalse: [ ^ self ].
-	self drawShadowRectangle: shape baseRectangleWithBorder.
+	self showEncompassingRectangleForLineIfNecessary: line
 ]
 
 { #category : #'visiting - helpers' }

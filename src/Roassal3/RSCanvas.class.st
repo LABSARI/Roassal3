@@ -332,7 +332,9 @@ RSCanvas >> extent [
 RSCanvas >> extent: aPoint [
 	"Set the extent of the canvas. This method is called when a window is resized. An event is raised when the extension happens. "
 	extent = aPoint ifTrue: [ ^ self ].
-	self notifyExtentChanged: aPoint
+	
+	self notifyExtentChanged: aPoint.
+	self camera invalidate.
 ]
 
 { #category : #accessing }

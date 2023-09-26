@@ -295,8 +295,17 @@ RSCanvasTest >> testDirtyAreaIsNotOutsideTheVisibleRectangle [
 	| box |
 	box := RSBox new size: 100; position: 100 asPoint; color: Color black.
 	canvas extent: 200@200.
+	canvas resetDirtyRectangle.
 	canvas add: box.
 	self assert: canvas dirtyRectangle equals: (50 asPoint corner: 100 asPoint).
+]
+
+{ #category : #'tests - dirty areas' }
+RSCanvasTest >> testDirtyIsVisibleRectangleWhenCanvasExtentChanges [
+
+	
+	canvas extent: 100 asPoint.
+	self assert: canvas dirtyRectangle equals: (-50 asPoint corner: 50 asPoint).
 ]
 
 { #category : #running }
