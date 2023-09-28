@@ -165,6 +165,23 @@ c
 	self pStyle dashOffset: offset
 ]
 
+{ #category : #public }
+RSBorder >> expandPoint: p1 to: p2 [
+	"
+	TODO
+	"
+	| vector unit w capStyle |
+	
+	style ifNil: [ ^ p1 ].
+	capStyle := style capStyle.
+	capStyle == #capButt ifTrue: [ ^ p1 ].
+	w := self width / 2.
+
+	vector := p1 - p2.
+	unit := vector / (vector r max: 1).
+	^ p1 + (unit * w)
+]
+
 { #category : #comparing }
 RSBorder >> hash [
 	^ (width hash hashMultiply + paint hash) hashMultiply + style hash

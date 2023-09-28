@@ -577,7 +577,7 @@ RSAthensRenderer >> paintFor: shape form: form [
 { #category : #'visiting - helpers' }
 RSAthensRenderer >> showEncompassingRectangleForLineIfNecessary: line [
 	showRectangles ifFalse: [ ^ self ].
-	self drawShadowRectangle: line encompassingRectangle
+	self drawShadowRectangle: line encompassingRectangle.
 ]
 
 { #category : #'visiting - helpers' }
@@ -761,8 +761,9 @@ RSAthensRenderer >> visitLine: line [
 			setPaint: paint;
 			drawShape: path ].
 	self visitBorderIfNecessary: line.
+	self showEncompassingRectangleForLineIfNecessary: line.
 	line markerShapesInPositionDo: [ :shape | shape accept: self ].
-	self showEncompassingRectangleForLineIfNecessary: line
+	
 ]
 
 { #category : #'visiting - helpers' }
