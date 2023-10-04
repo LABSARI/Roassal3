@@ -53,6 +53,6 @@ RSAnimatedPopup >> translatePopup: popup event: evt [
 				loadIdentity;
 				translation: (pscale scale: t);
 				scaleBy: (1@t) * scale.
-			evt signalUpdate.
+			popup signalUpdate.
 			]
 ]

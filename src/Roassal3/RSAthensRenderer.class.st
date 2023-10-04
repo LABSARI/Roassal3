@@ -624,6 +624,7 @@ RSAthensRenderer >> visitBorderIfNecessary: shape [
 
 { #category : #visiting }
 RSAthensRenderer >> visitBoundingShape: shape [
+	
 	self visitShapeIfNecessary: shape block: [
 		| path paint |
 		athensCanvas pathTransform loadAffineTransform: matrix.
@@ -662,7 +663,8 @@ RSAthensRenderer >> visitCanvas: aRSCanvas [
 	athensCanvas setAA: aRSCanvas antialiasing.
 	aRSCanvas camera accept: self.
 	transformeDirtyRectangle := self transform: dirtyRectangle.
-	self clearRectangle: transformeDirtyRectangle.
+	aRSCanvas shouldClearBackground ifTrue: [
+		self clearRectangle: transformeDirtyRectangle ].
 	athensCanvas clipBy: transformeDirtyRectangle during: [
 		(aRSCanvas shapeCollection shapesAtRectangle: dirtyRectangle)
 			accept: self ].
@@ -683,7 +685,7 @@ RSAthensRenderer >> visitCanvas: aRSCanvas [
 	aRSCanvas camera accept: self.
 	athensCanvas
 		setPaint: (Color purple alpha: 0.3);
-		drawShape: (self transform: oldDirtyRectangle).
+		drawShape: (self transform: oldDirtyRectangle)
 ]
 
 { #category : #'visiting - helpers' }

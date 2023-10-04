@@ -431,6 +431,7 @@ RSComposite >> privateShapes: aCollection [
 { #category : #removing }
 RSComposite >> removeShape: shape [
 	| evt |
+	shape invalidate.
 	children remove: shape.
 	shape shapeIndex to: children size do: [ :i | (children at: i) shapeIndex: i ].
 	shape parent: nil.

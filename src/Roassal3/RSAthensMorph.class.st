@@ -95,8 +95,8 @@ v canvas buildMorph drawOnMockCanvas
 RSAthensMorph >> drawShapes [
 	"The drawing has to be done when a change in the shapes occured or when there is an animation."
 	surface drawDuring: [ :athensCanvas |
-		roassalCanvas shouldClearBackground
-			ifTrue: [ surface clear ].
+		"roassalCanvas shouldClearBackground
+			ifTrue: [ surface clear ]."
 		"We display the elements that are subject to the camera"
 
 		renderer 

@@ -37,7 +37,8 @@ RSRotated >> dragging: evt [
 	targetShape matrix
 		loadIdentity;
 		rotateByRadians: totalAngle.
-	evt signalUpdate
+	targetShape resetBBox.
+	targetShape signalUpdate
 ]
 
 { #category : #initialization }

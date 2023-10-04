@@ -126,7 +126,7 @@ RSBasicAnimationExamples >> example04DashAnimation [
 		             repeat;
 		             from: 0;
 		             to: 8;
-		             on: border set: #dashOffset:.
+		             onStepDo: [ :t | border dashOffset: t. box signalUpdate].
 	box
 		when: RSMouseClick
 		do: [ :a |
@@ -231,7 +231,7 @@ RSBasicAnimationExamples >> example07CornerRadius [
 			range: #(0 1 0));
 		onStepDo: [:t |
 			b cornerRadius: (from interpolateTo: to at: t).
-			c signalUpdate.
+			b signalUpdate.
 			].
 	^ c
 ]

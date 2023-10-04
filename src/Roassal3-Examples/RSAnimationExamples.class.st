@@ -714,6 +714,7 @@ RSAnimationExamples >> example11C [
 
 { #category : #examples }
 RSAnimationExamples >> example12Sky [
+
 	<script: 'self new example12Sky open setLabel: ''Star trails'''>
 	<noTest>
 	| canvas client image ext dots random frame box colors |
@@ -721,43 +722,46 @@ RSAnimationExamples >> example12Sky [
 	random := Random new.
 	ext := 2200 @ 2200.
 	box := RSBox new
-		extent: ext;
-		position: 0 @ ext y / 2 negated;
-		paint:
-			(LinearGradientPaint new
-				colorRamp:
-					{(0 -> Color black).
-					(1 -> Color blue muchDarker)};
-				start: ext / 2 negated;
-				stop: ext / 2).
+		       extent: ext;
+		       position: 0 @ ext y / 2 negated;
+		       paint: (LinearGradientPaint new
+				        colorRamp: {
+						        (0 -> Color black).
+						        (1 -> Color blue muchDarker) };
+				        start: ext / 2 negated;
+				        stop: ext / 2).
 	canvas addShape: box.
 	colors := NSScale linear
-		domain: #(5 15);
-		range: {'6A6569' . 'white'}.
+		          domain: #( 5 15 );
+		          range: { '6A6569'. 'white' }.
 
 	dots := (1 to: 800) collect: [ :n |
-		| e |
-		e := RSEllipse new
-			propertyAt: #a put: (random rsNext: 0 and: 350);
-			propertyAt: #r put: (random rsNext: 3500 and: 6000);
-			size: (random rsNext: 5 and: 15);
-			yourself.
-		e color: ((colors scale: e width) alpha: (random rsNext: 0.1 and: 0.8)).
-		e ].
+		        | e |
+		        e := RSEllipse new
+			             propertyAt: #a put: (random rsNext: 0 and: 350);
+			             propertyAt: #r put: (random rsNext: 3500 and: 6000);
+			             size: (random rsNext: 5 and: 15);
+			             yourself.
+		        e color:
+			        ((colors scale: e width) alpha:
+				         (random rsNext: 0.1 and: 0.8)).
+		        e ].
 	canvas addAll: dots.
 	frame := 0.
 	canvas shouldClearBackground: false.
-	(canvas newAnimation duration: 5 seconds;onStepDo: [ :t| ])
-		when: RSAnimationEndEvent do: [ box remove ].
-	canvas newAnimation repeat
-		onStepDo: [ :t |
-			frame := frame + 0.1.
-			dots
-				do: [ :e |
-					| ang radius |
-					ang := ((e propertyAt: #a) + frame) degreesToRadians.
-					radius := e propertyAt: #r.
-					e position: ang cos @ ang sin negated * radius + (2500 @ 3000) ] ].
+	(canvas newAnimation
+		 duration: 5 seconds;
+		 onStepDo: [ :t |  ])
+		when: RSAnimationEndEvent
+		do: [ box remove ]
+		for: self.
+	canvas newAnimation repeat onStepDo: [ :t |
+		frame := frame + 0.1.
+		dots do: [ :e |
+			| ang radius |
+			ang := ((e propertyAt: #a) + frame) degreesToRadians.
+			radius := e propertyAt: #r.
+			e position: ang cos @ ang sin negated * radius + (2500 @ 3000) ] ].
 	(client := ZnEasy client)
 		url:
 			'http://www.transparentpng.com/download/mountain/68IzPF-mountain-clipart-png-photos.png';
@@ -768,13 +772,15 @@ RSAnimationExamples >> example12Sky [
 	canvas addShape: (RSBitmap new form: image).
 	canvas
 		when: RSExtentChangedEvent
-		do: [ | e s |
+		do: [
+			| e s |
 			e := canvas extent.
 			s := e x / 2200.
 			"2200 x 800 = image extent"
 			canvas camera
 				scale: s;
-				translateTo: 0 @ (e y / s - 800) / 2 negated ].
+				translateTo: 0 @ (e y / s - 800) / 2 negated ]
+		for: self.
 	^ canvas
 ]
 

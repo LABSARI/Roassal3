@@ -398,7 +398,7 @@ RSCanvas >> initialize [
 	fixedShapes := RSGroup new.
 	self shapeCollection: self defaultShapeCollection.
 	self
-		shouldClearBackground: false;
+		shouldClearBackground: true;
 		shouldShowDirtyRectangle: false;
 		shouldShowEncompassingRectangles: false.
 	nodes := RSGroup new.

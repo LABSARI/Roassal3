@@ -384,6 +384,7 @@ RSShapeExamples >> example16Bezier [
 	<script: 'self new example16Bezier open'>
 	| canvas box1 box2 line |
 	canvas := RSCanvas new.
+	canvas showEncompassingRectangles.
 	canvas addShape: (RSBezier new
 		color: Color red;
 		controlPoints:

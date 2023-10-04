@@ -55,7 +55,7 @@ RSBasicShapeExamples >> example03BasicComposite [
 		color: (Color red alpha: 0.4);
 		extent: 100@100;
 		yourself).
-
+	com adjustToChildren.
 	c addShape: com.
 	c addShape: (RSEllipse new
 		color: (Color gray alpha: 0.4);
@@ -85,7 +85,7 @@ RSBasicShapeExamples >> example04BasicComposite [
 		color: (Color red alpha: 0.5);
 		extent: 50@100;
 		yourself).
-
+	com adjustToChildren.
 	com position: 100@100.
 
 	c addShape: com.
@@ -132,6 +132,7 @@ RSBasicShapeExamples >> example06BasicLabels [
 	<script: 'self new example06BasicLabels open'>
 	| c label |
 	c := RSCanvas new.
+	c showEncompassingRectangles.
 	1 to: 12 do: [ :m |
 		| angle theta p|
 		angle := (m * 360 / 12) degreesToRadians.
@@ -143,6 +144,7 @@ RSBasicShapeExamples >> example06BasicLabels [
 			fontSize: 20;
 			text: (Month nameOfMonth: m);
 			yourself.
+
 		angle := angle radiansToDegrees.
 		angle := angle + ((angle between: 90 and: 270)
 			ifTrue: [ 180 ]
@@ -693,7 +695,7 @@ RSBasicShapeExamples >> example33EdgesBetweenChildren [
 	com1 paint: Color blue translucent.
 	b1 := RSBox new size: 10.
 	com1 add: b1.
-	com1 adjustToChildren.
+	com1 size: 100.
 	b1 position: 20@20.
 	com1 position: 200@0.
 
@@ -701,7 +703,7 @@ RSBasicShapeExamples >> example33EdgesBetweenChildren [
 	com2 paint: Color blue translucent.
 	b2 := RSBox new size: 10.
 	com2 add: b2.
-	com2 adjustToChildren.
+	com2 size: 120.
 	b2 position: 50@0.
 	com2 position: -100@0.
 
@@ -1105,6 +1107,7 @@ RSBasicShapeExamples >> example44AA [
 			canvas hasAntialiasing
 				ifTrue: [ canvas disableAntialiasing ]
 				ifFalse: [ canvas enableAntialiasing ].
+			canvas camera invalidate.
 			canvas signalUpdate ]
 		for: self.
 	^ canvas
@@ -1117,6 +1120,7 @@ RSBasicShapeExamples >> example45ExampleRTree [
 	<noTest>
 	| canvas nodes |
 	canvas := RSCanvas new.
+	canvas aaNone.
 	canvas useRTree.
 	nodes := ((1 to: 30000) collect: [ :i | | label |
 		label := RSLabel text: i.
