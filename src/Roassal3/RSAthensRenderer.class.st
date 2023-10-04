@@ -654,10 +654,10 @@ RSAthensRenderer >> visitCanvas: aRSCanvas [
 	matrix := AthensAffineTransform new.
 	originMatrix := matrix copy.
 	canvasRect := aRSCanvas visibleRectangle.
-	aRSCanvas showDirtyRectangle ifTrue: [
+	aRSCanvas shouldShowDirtyRectangle ifTrue: [
 		oldDirtyRectangle := dirtyRectangle.
 		dirtyRectangle := canvasRect ].
-	showRectangles := aRSCanvas shouldShowRectangles.
+	showRectangles := aRSCanvas shouldShowEncompassingRectangles.
 	athensCanvas fillRuleEvenOdd.
 	athensCanvas setAA: aRSCanvas antialiasing.
 	aRSCanvas camera accept: self.
@@ -675,7 +675,7 @@ RSAthensRenderer >> visitCanvas: aRSCanvas [
 			self ].
 	aRSCanvas resetDirtyRectangle.
 
-	aRSCanvas showDirtyRectangle ifFalse: [ ^ self ].
+	aRSCanvas shouldShowDirtyRectangle ifFalse: [ ^ self ].
 
 	athensCanvas pathTransform loadIdentity.
 	matrix loadIdentity.

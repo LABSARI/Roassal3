@@ -339,7 +339,7 @@ RSCanvasTest >> testDrawCanvasWithGroup [
 RSCanvasTest >> testDrawDirtyRectangleInCanvas [
 
 	| form |
-	canvas showDirtyRectangle: true.
+	canvas showDirtyRectangle.
 	canvas dirtyRectangle: (-100 asPoint corner: 100 asPoint).
 	form := canvas asForm.
 	self deny: (form colorAt: (canvas extent / 2) asIntegerPoint) equals: canvas background

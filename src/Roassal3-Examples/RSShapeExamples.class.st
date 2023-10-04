@@ -1414,7 +1414,6 @@ RSShapeExamples >> example47CompositeClipChildren [
 			border: (RSBorder new
 				color: Color black;
 				joinMiter);
-			clipChildren: index odd;
 			when: RSMouseDragging do: [ :evt |
 				| d |
 				d := evt camera distanceFromPixelToSpace: evt step.

@@ -36,7 +36,9 @@ Class {
 		'extent',
 		'color',
 		'host',
-		'showDirtyRectangle'
+		'shouldClearBackground',
+		'shouldShowDirtyRectangle',
+		'shouldShowEncompassingRectangles'
 	],
 	#pools : [
 		'AthensCairoDefinitions'
@@ -379,7 +381,7 @@ RSCanvas >> hasAntialiasing: aBoolean [
 
 { #category : #'debug support' }
 RSCanvas >> hideEncompassingRectangles [
-	self shouldShowRectangles: false
+	self shouldShowEncompassingRectangles: false
 ]
 
 { #category : #private }
@@ -390,20 +392,23 @@ RSCanvas >> indexesArrayIn: aCollection [
 
 { #category : #initialization }
 RSCanvas >> initialize [
+
 	super initialize.
 	shapes := RSGroup new.
 	fixedShapes := RSGroup new.
 	self shapeCollection: self defaultShapeCollection.
-	self shouldClearBackground: false.
-	self showDirtyRectangle: false.
+	self
+		shouldClearBackground: false;
+		shouldShowDirtyRectangle: false;
+		shouldShowEncompassingRectangles: false.
 	nodes := RSGroup new.
 	edges := RSGroup new.
 	animations := OrderedCollection new.
 	color := Color white.
 	extent := self defaultExtent.
 	camera := RSCamera new
-		canvas: self;
-		yourself.
+		          canvas: self;
+		          yourself.
 	self useMorphicHost
 ]
 
@@ -715,14 +720,14 @@ RSCanvas >> shapesWithActionForPosition: aPositionInSpace [
 	^ result
 ]
 
-{ #category : #testing }
+{ #category : #accessing }
 RSCanvas >> shouldClearBackground [
 	"Return whether the screen must be cleaned at each screen refresh"
-	^ self propertyAt: #shouldClearBackground ifAbsent: [ true ]
+	^ shouldClearBackground
 ]
 
 { #category : #accessing }
-RSCanvas >> shouldClearBackground: aBool [
+RSCanvas >> shouldClearBackground: aBoolean [
 	"Determine if the canvas must be cleaned at each screen refresh. Per default it is, which means that if some shapes are translated, a footprint is left. This is useful to realize interesting visual effects.
 
 For example, evaluate the following script:
@@ -737,34 +742,38 @@ c.
 And execute the expression `c camera translateBy: 1 @ 1.`
 
 "
-	self propertyAt: #shouldClearBackground put: aBool
+	shouldClearBackground := aBoolean
 ]
 
-{ #category : #testing }
-RSCanvas >> shouldShowRectangles [
-	^ self propertyAt: #shouldShowRectangles ifAbsent: [ false ]
+{ #category : #accessing }
+RSCanvas >> shouldShowDirtyRectangle [
+	^ shouldShowDirtyRectangle
+]
+
+{ #category : #accessing }
+RSCanvas >> shouldShowDirtyRectangle: aBoolean [
+	shouldShowDirtyRectangle := aBoolean
+]
+
+{ #category : #accessing }
+RSCanvas >> shouldShowEncompassingRectangles [
+	^ shouldShowEncompassingRectangles
+]
+
+{ #category : #accessing }
+RSCanvas >> shouldShowEncompassingRectangles: aBoolean [
+	shouldShowEncompassingRectangles := aBoolean
 ]
 
 { #category : #'debug support' }
-RSCanvas >> shouldShowRectangles: aBoolean [
-	self propertyAt: #shouldShowRectangles put: aBoolean
-]
-
-{ #category : #'dirty areas' }
 RSCanvas >> showDirtyRectangle [
 
-	^ showDirtyRectangle
-]
-
-{ #category : #'dirty areas' }
-RSCanvas >> showDirtyRectangle: aBoolean [ 
-	
-	showDirtyRectangle := aBoolean
+	self shouldShowDirtyRectangle: true
 ]
 
 { #category : #'debug support' }
 RSCanvas >> showEncompassingRectangles [
-	self shouldShowRectangles: true
+	self shouldShowEncompassingRectangles: true
 ]
 
 { #category : #updating }

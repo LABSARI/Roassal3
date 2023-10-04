@@ -622,7 +622,7 @@ RSLayoutExamples >> example20FlowLayout [
 	{
 		'Show/Hide Boxes'.
 		[
-		canvas shouldShowRectangles
+		canvas shouldShowEncompassingRectangles
 			ifTrue: [ canvas hideEncompassingRectangles ]
 			ifFalse: [ canvas showEncompassingRectangles ] ].
 		'Show/Hide Underlines'.

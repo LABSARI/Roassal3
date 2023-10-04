@@ -84,15 +84,22 @@ RSAbstractLine >> accept: visitor [
 
 { #category : #'accessing - computed' }
 RSAbstractLine >> addTwoPointsBasedInWidthFrom: p1 to: p2 in: allPoints [
+
 	| w vector u left right |
-	allPoints add: p1; add: p2.
-	w := self border width/2.
+	allPoints
+		add: p1;
+		add: p2.
+	w := self hasBorder
+		     ifTrue: [ border width / 2 ]
+		     ifFalse: [ 0 ].
 	vector := p1 - p2.
 	u := vector normal.
-	left := p1 - (u* w).
+	left := p1 - (u * w).
 	right := p1 + (u * w).
-	
-	allPoints add: left; add: right.
+
+	allPoints
+		add: left;
+		add: right
 ]
 
 { #category : #'attach point' }
@@ -161,21 +168,12 @@ RSAbstractLine >> computeEncompassingRectangle [
 	cp := self controlPoints.
 	^ cp ifEmpty: [ 0 @ 0 corner: 0 @ 0 ] ifNotEmpty: [
 		  | allPoints lineRectangle |
-		  allPoints := OrderedCollection new.
-		  2 to: cp size do: [ :i |
-			  | p1 p2 |
-			  p1 := cp at: i - 1.
-			  p2 := cp at: i.
-			  p1 := self border expandPoint: p1 to: p2.
-			  p2 := self border expandPoint: p2 to: p1.
-			  self addTwoPointsBasedInWidthFrom: p1 to: p2 in: allPoints.
-			  self addTwoPointsBasedInWidthFrom: p2 to: p1 in: allPoints ].
-			lineRectangle:= Rectangle encompassing: allPoints.
+		  allPoints := self encompassingPointsFor: cp.
+		  lineRectangle := Rectangle encompassing: allPoints.
 		  self markerShapesInPositionDo: [ :m |
-			  lineRectangle := lineRectangle merge: m shape encompassingRectangle
-			].
-			lineRectangle.
-		  ]
+			  lineRectangle := lineRectangle merge:
+				                   m shape encompassingRectangle ].
+		  lineRectangle ]
 ]
 
 { #category : #accessing }
@@ -191,6 +189,25 @@ RSAbstractLine >> dashArray: arrayOfNumbers [
 { #category : #'style - dashes' }
 RSAbstractLine >> dashed [
 	self dashArray: #(4)
+]
+
+{ #category : #'accessing - computed' }
+RSAbstractLine >> encompassingPointsFor: cp [
+
+	| allPoints |
+	cp size = 1 ifTrue: [ ^ cp ].
+	allPoints := OrderedCollection new.
+	2 to: cp size do: [ :i |
+		| p1 p2 |
+		p1 := cp at: i - 1.
+		p2 := cp at: i.
+		self hasBorder ifTrue: [
+			p1 := border expandPoint: p1 to: p2.
+			p2 := border expandPoint: p2 to: p1 ].
+		self addTwoPointsBasedInWidthFrom: p1 to: p2 in: allPoints.
+		self addTwoPointsBasedInWidthFrom: p2 to: p1 in: allPoints ].
+
+	^ allPoints
 ]
 
 { #category : #accessing }
