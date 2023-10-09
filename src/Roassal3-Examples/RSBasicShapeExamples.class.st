@@ -1114,11 +1114,11 @@ RSBasicShapeExamples >> example44AA [
 ]
 
 { #category : #lines }
-RSBasicShapeExamples >> example45ExampleRTree [
+RSBasicShapeExamples >> example45RTree30KShapes [
 
-	<script: 'self new example45ExampleRTree open'>
+	<script: 'self new example45RTree30KShapes open'>
 	<noTest>
-	| canvas nodes |
+	| canvas nodes interaction |
 	canvas := RSCanvas new.
 	canvas aaNone.
 	canvas useRTree.
@@ -1134,7 +1134,9 @@ RSBasicShapeExamples >> example45ExampleRTree [
 	RSGridLayout on: nodes.
 	nodes @ RSDraggable; @ RSPopup; @ RSHighlightable green.
 	canvas addAll: nodes.
-	canvas @ RSCanvasController.
+	interaction := RSCanvasController new.
+	interaction configuration shouldAnimateZoom: true.
+	canvas @ interaction.
 	^ canvas
 ]
 

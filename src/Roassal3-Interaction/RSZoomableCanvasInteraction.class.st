@@ -22,11 +22,12 @@ RSZoomableCanvasInteraction class >> autoZoomMove: aCanvas newScale: newScale [
 		zoomMove: aCanvas 
 		pixelPosition: morphPosition
 		spacePosition: position
-		newScale: newScale.
+		newScale: newScale
+		useAnimation: true.
 ]
 
 { #category : #events }
-RSZoomableCanvasInteraction class >> zoomMove: aCanvas newScale: newScale [
+RSZoomableCanvasInteraction class >> zoomMove: aCanvas newScale: newScale useAnimation: aBoolean [
 	| scale camera position morphPosition |
 	camera := aCanvas camera.
 	scale := camera scale.
@@ -37,24 +38,35 @@ RSZoomableCanvasInteraction class >> zoomMove: aCanvas newScale: newScale [
 		zoomMove: aCanvas 
 		pixelPosition: morphPosition
 		spacePosition: position
-		newScale: newScale.
+		newScale: newScale
+		useAnimation: aBoolean.
 ]
 
 { #category : #events }
-RSZoomableCanvasInteraction class >> zoomMove: aCanvas pixelPosition: morphPosition spacePosition: position newScale: newScale [
+RSZoomableCanvasInteraction class >> zoomMove: aCanvas pixelPosition: morphPosition spacePosition: position newScale: newScale useAnimation: aBoolean [
 	| scale camera |
 	camera := aCanvas camera.
 	scale := camera scale.
-	
+	aBoolean ifFalse: [ | newPosition zero |
+		camera scale: newScale.
+		newPosition := camera fromSpaceToPixel: position.
+		zero := camera fromSpaceToPixel: 0@0.
+		camera matrix translation: morphPosition - (newPosition - zero)-(camera originMode gapDistance: camera).
+			
+		camera invalidate.
+		aCanvas signalUpdate.
+		^ self ].
 	aCanvas newAnimation 
 		easing: RSEasingInterpolator backOut;
 		duration: 200 milliSeconds;
 		onStepDo: [ :t | | newPosition zero |
 			"this method call a loadIdentity in the camera matrix"
+			
 			camera scale: (scale interpolateTo: newScale at: t).
 			newPosition := camera fromSpaceToPixel: position.
 			zero := camera fromSpaceToPixel: 0@0.
 			camera matrix translation: morphPosition - (newPosition - zero)-(camera originMode gapDistance: camera).
+			
 			camera invalidate.
 			aCanvas signalUpdate ]
 ]
@@ -78,7 +90,11 @@ RSZoomableCanvasInteraction >> processEvent: evt [
 	delta := evt isUp
 		ifTrue: [ 1.25 ]
 		ifFalse: [ 0.8 ].
-	self class zoomMove: evt canvas newScale: (self scaleFor: evt camera scale * delta).
+	self class
+		zoomMove: evt canvas
+		newScale: (self scaleFor: evt camera scale * delta)
+		useAnimation: self configuration shouldAnimateZoom.
+	
 ]
 
 { #category : #rendering }

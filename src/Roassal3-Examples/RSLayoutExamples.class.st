@@ -836,6 +836,7 @@ RSLayoutExamples >> example23Roassal3CommitsWithTimeGaps [
 				pushBack ] ].
 
 	^ aCanvas
+		useRTree;
 		zoomToFit;
 		@ RSCanvasController
 ]

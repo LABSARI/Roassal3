@@ -143,7 +143,7 @@ RSHighlightable class >> withAntAnimation [
 				to: -8;
 				duration: 1 second;
 				onStepDo: [ :t |
-					shape connectedLines do: [ :ed |ed border dashOffset: t ].
+					shape connectedLines do: [ :ed |ed border dashOffset: t. ed invalidate ].
 					shape signalUpdate ].
 			shape canvas propertyAt: #antAnimation put: anime.
 		].

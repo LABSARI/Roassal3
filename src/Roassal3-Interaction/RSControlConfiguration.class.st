@@ -13,7 +13,8 @@ Class {
 		'maxScale',
 		'minScale',
 		'shouldUseBasicZoom',
-		'shouldShowLegend'
+		'shouldShowLegend',
+		'shouldAnimateZoom'
 	],
 	#category : #'Roassal3-Interaction-Utils'
 }
@@ -28,7 +29,8 @@ RSControlConfiguration >> initialize [
 		maxScale: 7;
 		padding: 25;
 		withLegend;
-		noBasicZoom
+		noBasicZoom;
+		shouldAnimateZoom: true.
 ]
 
 { #category : #accessing }
@@ -73,6 +75,18 @@ RSControlConfiguration >> padding [
 { #category : #accessing }
 RSControlConfiguration >> padding: aMargin [
 	padding := aMargin asMargin
+]
+
+{ #category : #accessing }
+RSControlConfiguration >> shouldAnimateZoom [
+
+	^ shouldAnimateZoom
+]
+
+{ #category : #accessing }
+RSControlConfiguration >> shouldAnimateZoom: anObject [
+
+	shouldAnimateZoom := anObject
 ]
 
 { #category : #testing }

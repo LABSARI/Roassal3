@@ -110,7 +110,8 @@ RSPieExamples >> example04SegmentSpacingAnimation [
 		onStepDo: [ :t |
 			pie canvas nodes do: [ :s | | op |
 				op := 125 - (t degreesToRadians sin abs * 125).
-				s segmentSpacing: op. ] ].
+				s segmentSpacing: op.
+				s invalidate ] ].
 	pie canvas zoomToFit.
 	^ pie canvas
 ]

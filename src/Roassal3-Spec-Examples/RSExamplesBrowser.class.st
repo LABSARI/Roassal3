@@ -13,7 +13,9 @@ Class {
 		'codeEditor',
 		'classesList',
 		'selectedClass',
-		'searchButton'
+		'searchButton',
+		'showDirtyRectangleButton',
+		'showEncompassingRectanglesButton'
 	],
 	#category : #'Roassal3-Spec-Examples-Menu'
 }
@@ -34,7 +36,14 @@ RSExamplesBrowser class >> defaultLayout [
 					yourself) withConstraints: [:c | c expand: false; height: 25];
 				add: #codeEditor;
 				yourself);
-			add: #roassalCanvas;
+			add: (SpBoxLayout newVertical
+				add: (SpBoxLayout newHorizontal
+					add: #showDirtyRectangleButton withConstraints: [:c | c expand: false; width: 25];
+					add: #showEncompassingRectanglesButton withConstraints: [:c | c expand: false; width: 25];
+					yourself)
+				withConstraints: [:c | c expand: false; height: 25];
+				add: #roassalCanvas;
+				yourself);
 			yourself);
 		add: #rightButton withConstraints: const;
 		yourself
@@ -84,12 +93,20 @@ RSExamplesBrowser >> computeExamples [
 
 { #category : #initialization }
 RSExamplesBrowser >> connectPresenters [
-
-	classesList	whenSelectedItemChangedDo: [ :cls | self classChanged: cls ].
-	codeEditor whenSubmitDo: [ :text | self compile: text.  ].
+	classesList whenSelectedItemChangedDo: [ :cls |
+		self classChanged: cls ].
+	codeEditor whenSubmitDo: [ :text | self compile: text ].
 	leftButton action: [ self shiftLeft ].
 	rightButton action: [ self shiftRight ].
-	searchButton action: [ self openSpotter ]
+	searchButton action: [ self openSpotter ].
+	showEncompassingRectanglesButton whenChangedDo: [ :state |
+		roassalCanvas canvas shouldShowEncompassingRectangles: state.
+		roassalCanvas canvas camera invalidate.
+		roassalCanvas canvas signalUpdate ].
+	showDirtyRectangleButton whenChangedDo: [ :state |
+		roassalCanvas canvas shouldShowDirtyRectangle: state.
+		roassalCanvas canvas camera invalidate.
+		roassalCanvas canvas signalUpdate  ].
 ]
 
 { #category : #private }
@@ -114,7 +131,12 @@ RSExamplesBrowser >> initializePresenters [
 	leftButton := self newButton
 		label: '<';
 		yourself.
-
+	showDirtyRectangleButton := self newCheckBox
+		label: 'Show Dirty Rectangle';
+		yourself.
+	showEncompassingRectanglesButton := self newCheckBox
+		label: 'Show Encompassing Rectangles';
+		yourself.
 	roassalCanvas := self instantiate: SpRoassal3InspectorPresenter.
 
 	codeEditor := self newCode
@@ -190,9 +212,13 @@ RSExamplesBrowser >> updateCanvas [
 	codeEditor text: current sourceCode.
 	codeEditor beForBehavior: selectedClass.
 	[
-		canvas :=  current selector value: selectedClass new.
+		canvas := current selector value: selectedClass new.
 		canvas class = RSCanvas
 			ifFalse: [ canvas := canvas build; canvas ].
+		canvas 
+			shouldShowEncompassingRectangles: showEncompassingRectanglesButton state;
+			shouldShowDirtyRectangle: showDirtyRectangleButton state.
+		
 		roassalCanvas canvas: canvas.
 	] onErrorDo: [ :ex | ex traceCr ]
 ]

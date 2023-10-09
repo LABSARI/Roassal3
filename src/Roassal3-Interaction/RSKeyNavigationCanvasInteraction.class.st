@@ -152,6 +152,7 @@ RSKeyNavigationCanvasInteraction >> zoomMove: aCanvas delta: delta [
 	RSZoomableCanvasInteraction 
 		zoomMove: aCanvas 
 		newScale: (self scaleFor: aCanvas camera scale * delta)
+		useAnimation: self configuration shouldAnimateZoom
 ]
 
 { #category : #'events-processing' }

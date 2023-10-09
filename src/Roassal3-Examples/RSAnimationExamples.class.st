@@ -36,7 +36,8 @@ RSAnimationExamples >> example01BoxWindmill [
 				s matrix
 					loadIdentity;
 					translateBy: s model;
-					rotateByRadians: (s model x + s model y + frameCount) degreesToRadians * 1.95  ].
+					rotateByRadians: (s model x + s model y + frameCount) degreesToRadians * 1.95.
+				s resetBBox ].
 			frameCount := frameCount + 1. ].
 	"canvas @ RSGraphCanvasMonitorInteraction."
 	^ canvas

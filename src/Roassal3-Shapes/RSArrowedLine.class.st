@@ -55,7 +55,7 @@ RSArrowedLine >> copy [
 { #category : #initialization }
 RSArrowedLine >> defaultHead [
 	^ RSPolygon new
-		privatePoints: { -5@5. 0@0. 5@5. 0@0 };
+		points: { -5@5. 0@0. 5@5. 0@0 };
 		border: self border;
 		yourself
 ]
@@ -63,7 +63,8 @@ RSArrowedLine >> defaultHead [
 { #category : #initialization }
 RSArrowedLine >> initialize [
 	super initialize.
-	self markerEnd: self defaultHead
+	self markerEnd: self defaultHead.
+	self markerEnd offset: self markerEnd shape height/2.
 ]
 
 { #category : #copying }
@@ -71,4 +72,5 @@ RSArrowedLine >> postCopy [
 	super postCopy.
 	markers := nil.
 	self markerEnd: self defaultHead.
+	self markerEnd offset: self markerEnd shape height/2.
 ]

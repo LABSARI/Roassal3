@@ -559,6 +559,13 @@ RSAthensRenderer >> getOrCreatePathOf: shape [
 	^ path
 ]
 
+{ #category : #visiting }
+RSAthensRenderer >> inverseTransform: aRectangle [
+	^ Rectangle encompassing: (aRectangle corners 
+		collect: [:corner | matrix inverseTransform: corner])
+	
+]
+
 { #category : #paint }
 RSAthensRenderer >> paintFor: shape form: form [
 	form isForm ifFalse: [ ^ form ].
@@ -649,7 +656,7 @@ RSAthensRenderer >> visitCamera: camera [
 { #category : #visiting }
 RSAthensRenderer >> visitCanvas: aRSCanvas [
 
-	| transformeDirtyRectangle oldDirtyRectangle |
+	| transformeDirtyRectangle oldDirtyRectangle modifiedDirtyRectangle |
 	dirtyRectangle := aRSCanvas dirtyRectangle.
 	dirtyRectangle ifNil: [ ^ self ].
 	matrix := AthensAffineTransform new.
@@ -665,16 +672,15 @@ RSAthensRenderer >> visitCanvas: aRSCanvas [
 	transformeDirtyRectangle := self transform: dirtyRectangle.
 	aRSCanvas shouldClearBackground ifTrue: [
 		self clearRectangle: transformeDirtyRectangle ].
+	modifiedDirtyRectangle := self inverseTransform: transformeDirtyRectangle.
 	athensCanvas clipBy: transformeDirtyRectangle during: [
-		(aRSCanvas shapeCollection shapesAtRectangle: dirtyRectangle)
-			accept: self ].
+		(aRSCanvas shapeCollection shapesAtRectangle: modifiedDirtyRectangle ) accept: self ].
 	dirtyRectangle := transformeDirtyRectangle.
 	matrix loadIdentity.
 	originMatrix loadIdentity.
 	athensCanvas pathTransform loadIdentity.
 	athensCanvas clipBy: transformeDirtyRectangle during: [
-		(aRSCanvas fixedShapes shapesAtRectangle: dirtyRectangle) accept:
-			self ].
+		(aRSCanvas fixedShapes shapesAtRectangle: dirtyRectangle) accept: self ].
 	aRSCanvas resetDirtyRectangle.
 
 	aRSCanvas shouldShowDirtyRectangle ifFalse: [ ^ self ].

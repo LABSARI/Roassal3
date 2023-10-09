@@ -422,6 +422,8 @@ RSShapeExamples >> example17Labeled [
 	<script: 'self new example17Labeled open'>
 	| canvas e1 e2 s line label |
 	canvas := RSCanvas new.
+	canvas showEncompassingRectangles.
+	canvas showDirtyRectangle.
 	s := [ :m |
 		RSEllipse new
 			border: RSBorder new;
@@ -622,7 +624,7 @@ RSShapeExamples >> example27MultilineLabelBasic [
 	<script: 'self new example27MultilineLabelBasic open'>
 	| canvas shapeBuilder text |
 	canvas := RSCanvas new.
-	text := '"tu est loin,
+	text := '"tu es loin,
 très loin de tous    ces regards vicieux
 qui s''alimentent de ta lumière"'.
 	shapeBuilder := RSMultilineLabelBuilder new.
